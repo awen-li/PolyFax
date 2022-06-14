@@ -48,8 +48,11 @@ def main(argv):
     if IsDaemon == True:
         Daemonize ()
     
-    if (Function == "langcrawler"):
-        Cl = LangCrawler()
+    if (Function == "lang"):
+        Cl = LangCrawler(UserName="", Token="", LangList=[])
+        Cl.GrabProject ()
+    if (Function == "domain"):
+        Cl = LangCrawler(UserName="", Token="", LangList=[])
         Cl.GrabProject ()
     else:
         pass

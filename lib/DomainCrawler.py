@@ -4,20 +4,11 @@ from itertools import combinations
 from lib.Crawler import Crawler
 
     
-class LangCrawler(Crawler):
-    def __init__(self, FileName="RepositoryList-Lang.csv", UserName="", Token="", LangList=[]):
+class DomainCrawler(Crawler):
+    def __init__(self, FileName="RepositoryList-Domain.csv", UserName="", Token="", LangList=[]):
         super(LangCrawler, self).__init__(FileName, UserName, Token)
         self.LangList = LangList
-        
-        self.MinLang  = 2
-        self.MaxLang  = 6
-        self.LangSelectList = []
-        
-    def GetLangSelections ():
-        for i in range(self.MinLang, self.MaxLang+1, 1):
-            LangSelect = [list(x) for x in combinations(self.LangList, i)]
-            if len(LangSelect) > 0:
-                self.LangSelectList.extend(LangSelect)
+        self.Domains  = []
 
     def LangValidate (self, LangsDict):
         Langs = list(LangsDict.keys ())[0:6]

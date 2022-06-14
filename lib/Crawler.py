@@ -24,10 +24,21 @@ class Crawler():
             return self.HttpCall(Url)
         return Result.json()
 
-    def GetPageofRepos(self, Star, PageNo):
+    def GetRepoByStar(self, Star, PageNo):
         Url  = 'https://api.github.com/search/repositories?' + 'q=stars:' + Star + '+is:public+mirror:false'        
         Url += '&sort=stars&per_page=100' + '&order=desc' + '&page=' + str(PageNo)
         return self.HttpCall(Url)
+
+    def GetRepoByDomain(self, Domain, PageNo):
+        Url  = 'https://api.github.com/search/repositories?' + 'q=' + Domain + '+is:public+mirror:false'        
+        Url += '&sort=stars&per_page=100' + '&order=desc' + '&page=' + str(PageNo)
+        return self.HttpCall(Url)
+
+    def GetRepoLangs (self, LangUrl):
+        Langs = self.HttpCall(LangUrl)
+        Langs = dict(sorted(Langs.items(), key=lambda item:item[1], reverse=True))
+        #Langs = [lang.lower() for lang in Langs.keys()]
+        return Langs
 
     def Save (self):
         Header = ['id', 'Star', 'Languages', 'ApiUrl', 'CloneUrl', 'Description']
@@ -53,7 +64,7 @@ class Crawler():
             writer.writerow(Row)
         return
 
-    def CrawlerProject (self):
+    def GrabProject (self):
         PageNum = 10  
         Star    = 15000
         Delta   = 100
