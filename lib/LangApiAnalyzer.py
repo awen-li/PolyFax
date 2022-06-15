@@ -94,7 +94,7 @@ class LangApiAnalyzer (Analyzer):
     def __init__(self, StartNo=0, EndNo=65535, FileName='ApiSniffer'):
         super(LangApiAnalyzer, self).__init__(FileName=FileName)
 
-        self.FilePath = Config.BaseDir + '/' + Config.StatisticDir
+        self.FilePath = Config.BaseDir + '/' + Config.StatisticDir + '/'
         
         self.StartNo = StartNo
         self.EndNo   = EndNo
@@ -128,7 +128,7 @@ class LangApiAnalyzer (Analyzer):
 
         # Default file 
         Header = ['id', 'languages', 'classifier', 'clfType', 'fileType']
-        SfFile = self.FilePath + "/ApiSniffer.csv"
+        SfFile = self.FilePath + self.FileName + '.csv'
         with open(SfFile, 'w', encoding='utf-8') as CsvFile:       
             writer = csv.writer(CsvFile)
             writer.writerow(Header)      
@@ -145,8 +145,8 @@ class LangApiAnalyzer (Analyzer):
             self.Index += 1
             return
         
-        ReppId  = Repo.id
-        RepoDir = "./Data/Repository/" + str(ReppId)
+        ReppId  = Repo.Id
+        RepoDir = Config.BaseDir + "/Repository/" + str(ReppId)
         if not os.path.exists (RepoDir):
             self.Index += 1
             return
@@ -234,7 +234,7 @@ class LangApiAnalyzer (Analyzer):
                     self.AddScanResult (ClfList, Clf)
 
         if (len (ClfList) >= len(Langs)-1):
-            self.research_stats [ReppId] = ClfList
+            self.AnalyzStats [ReppId] = ClfList
             return
 
         # 2. IRI Scan      
@@ -247,7 +247,7 @@ class LangApiAnalyzer (Analyzer):
                     self.AddScanResult (ClfList, Clf)
         
         if (len (ClfList) >= 3 or len (ClfList) >= len(Langs)-1):
-            self.research_stats [ReppId] = ClfList
+            self.AnalyzStats [ReppId] = ClfList
             return
 
         #3. ID Scan
@@ -260,7 +260,7 @@ class LangApiAnalyzer (Analyzer):
                     self.AddScanResult (ClfList, Clf)
         
         if (len (ClfList) != 0):
-            self.research_stats [ReppId] = ClfList
+            self.AnalyzStats [ReppId] = ClfList
             return
         
         # 4. HI Scan      
@@ -272,7 +272,7 @@ class LangApiAnalyzer (Analyzer):
                 if Clf != None:
                     self.AddScanResult (ClfList, Clf)
 
-        self.research_stats [ReppId] = ClfList
+        self.AnalyzStats [ReppId] = ClfList
         return None
 
     def FormatTypes (self, TypeList):
@@ -295,7 +295,7 @@ class LangApiAnalyzer (Analyzer):
             return
         #Header = ['id', ''langs', 'classifier', 'clfType', 'fileType']
         SfFile = self.FilePath + self.FileName + '.csv'
-        with open(SfFile, 'w', encoding='utf-8') as CsvFile:       
+        with open(SfFile, 'a', encoding='utf-8') as CsvFile:       
             writer = csv.writer(CsvFile)
             #writer.writerow(Header)  
             for Id, ClfList in self.AnalyzStats.items():

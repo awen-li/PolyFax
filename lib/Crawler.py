@@ -158,13 +158,13 @@ class Crawler():
         self.Save()
 
     def Clone (self):
-        BaseDir = os.getcwd () + "/Repository/"
+        BaseDir = Config.BaseDir + "/Repository/"
         if not os.path.exists (BaseDir):
             os.mkdir (BaseDir)
         
         Df = pd.read_csv(self.FileName)
         for Index, Row in Df.iterrows():            
-            RepoId = Row['id']        
+            RepoId = Row['Id']        
             RepoDir = BaseDir + str(RepoId)
             if not os.path.exists (RepoDir):
                 os.mkdir (RepoDir)
@@ -180,4 +180,11 @@ class Crawler():
 
             CleanCmd = "find . -name \".git\" | xargs rm -rf"
             os.system (CleanCmd)
+
+    def Grab (self):
+        # grab repository list
+        self.GrabProject ()
+
+        # clone all the project
+        self.Clone ()
 

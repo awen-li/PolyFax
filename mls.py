@@ -77,13 +77,21 @@ def main(argv):
         Daemonize ()
 
     if Act == 'all':
+        # 1.  grap the project 
         Cl = GetCrawler (Type)
-        Cl.GrabProject ()
+        Cl.Grab ()
+
+        # 2. analyze commits
+
+        # 3. analyze the APIs
+        Analyzer = LangApiAnalyzer ()
+        Analyzer.AnalyzeData (Analyzer.RepoList)
     elif Act == 'crawler':
         Cl = GetCrawler (Type)
-        Cl.GrabProject ()
+        Cl.Grab ()
     elif Act == 'api':
         Analyzer = LangApiAnalyzer ()
+        Analyzer.AnalyzeData (Analyzer.RepoList)
     elif Act == 'cmmt':
         Help ()
     else:
