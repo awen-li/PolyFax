@@ -2,6 +2,7 @@
 import os
 import sys, getopt
 from lib.LangCrawler import LangCrawler
+from lib.LangApiAnalyzer import LangApiAnalyzer
 
 def Daemonize(pid_file=None):
     pid = os.fork()
@@ -28,34 +29,65 @@ def Daemonize(pid_file=None):
         with open(pid_file, 'w+') as f:
             f.write(str(os.getpid()))
         atexit.register(os.remove, pid_file)
+
+
+def Help ():
+    print ("====================================================")
+    print ("====           PolyFax Help Information         ====")
+    print ("====================================================")
+    print ("= python mls.py -a crawler -t <lang/domain>")
+    print ("= python mls.py -a api")
+    print ("= python mls.py -a cmmt")
+    print ("= python mls.py -a all")
+    print ("====================================================\r\n")
+
+
+def GetCrawler (Type):
+    Cl = None
+    if (Type == "lang"):
+        Cl = LangCrawler(UserName="Daybreak2019", Token="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", LangList=[], MaxGrabNum=10)
+    elif (Type  == "domain"):
+        Cl = LangCrawler(UserName="", Token="", LangList=[])
+    else:
+        Help ()
+        exit (0)
+    return Cl
    
 def main(argv):
-    Function = 'crawler'
     IsDaemon = False
+    Type = 'lang'
+    Act  = 'crawler'
+    
     RepoDir  = ""
 
     try:
-        opts, args = getopt.getopt(argv,"df:r:",["Function="])
+        opts, args = getopt.getopt(argv,"dt:a:",["Type="])
     except getopt.GetoptError:
-        print ("python mls.py -f <Function>")
+        Help ()
         sys.exit(2)
     for opt, arg in opts:
-        if opt in ("-f", "--Function"):
-            Function = arg;
+        if opt in ("-t", "--type"):
+            Type = arg;
+        if opt in ("-a", "--action"):
+            Act = arg;
         elif opt in ("-d", "--daemon"):
             IsDaemon = True;
 
     if IsDaemon == True:
         Daemonize ()
-    
-    if (Function == "lang"):
-        Cl = LangCrawler(UserName="", Token="", LangList=[])
+
+    if Act == 'all':
+        Cl = GetCrawler (Type)
         Cl.GrabProject ()
-    if (Function == "domain"):
-        Cl = LangCrawler(UserName="", Token="", LangList=[])
+    elif Act == 'crawler':
+        Cl = GetCrawler (Type)
         Cl.GrabProject ()
+    elif Act == 'api':
+        Analyzer = LangApiAnalyzer ()
+    elif Act == 'cmmt':
+        Help ()
     else:
-        pass
+        Help()
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -2,10 +2,12 @@
 
 import abc
 import csv 
-import sys 
+import sys
+import pandas as pd
 from progressbar import ProgressBar
 from lib.Config import Config
 from lib.Util import Util
+from lib.Repository import Repository
 
 
 csv.field_size_limit(sys.maxsize)
@@ -15,10 +17,13 @@ class Analyzer(metaclass=abc.ABCMeta):
 
     Language_Combination_Limit = 20
 
-    def __init__(self, FileName):
+    def __init__(self, FileName="Analyzer.csv"):
         self.FileName = FileName
-        self.FilePath = Config.getdir_stat()
+        self.FilePath = Config.BaseDir
         self.AnalyzStats = {}
+
+        self.RepoList = []
+        self.LoadRepoList ()
         
     @abc.abstractmethod
     def SaveData (self, data, FileName=None):
@@ -45,34 +50,40 @@ class Analyzer(metaclass=abc.ABCMeta):
                 Row = self.__Obj2List (Value)
                 writer.writerow(Row)
 
-    def LoadRepoList (FileName="RepoList.csv"):
-        pass
+    def LoadRepoList (self, FileName="RepositoryList.csv"):
+        FilePath = self.FilePath + '/' + FileName
+        df = pd.read_csv(FilePath)
+        for index, row in df.iterrows():
+            RepoData = Repository (row['Id'], row['Star'], row['Langs'], row['ApiUrl'], row['CloneUrl'], row['Topics'], 
+                                   row['Descripe'], row['Created'], row['Pushed'])
+            self.RepoList.append (RepoData)
+        print (self.RepoList)
 
     @abc.abstractmethod
-    def __Obj2List (self, Value):
+    def Obj2List (self, Value):
         return list(Value.__dict__.values())
 
     @abc.abstractmethod
-    def __Obj2Dict (self, Value):
+    def Obj2Dict (self, Value):
         return Value.__dict__
 
     @abc.abstractmethod
-    def __GetHeader (self, Data):
+    def GetHeader (self, Data):
         Headers = list(list(Data.values())[0].__dict__.keys())
         return [header.replace(" ", "_") for header in Headers]
 
     def AnalyzeData (self, RepoList):
         pbar = ProgressBar()
         for Repo in pbar(RepoList):
-            self.__UpdateAnalysis (Repo)
-        self.__UpdateFinal ()
+            self.UpdateAnalysis (Repo)
+        self.UpdateFinal ()
 
     @abc.abstractmethod
-    def __UpdateFinal (self):
+    def UpdateFinal (self):
         print("Abstract Method that is implemented by inheriting classes")
 
     @abc.abstractmethod
-    def __UpdateAnalysis(self, CurRepo):
+    def UpdateAnalysis(self, CurRepo):
         print("Abstract Method that is implemented by inheriting classes")
 
    

@@ -3,6 +3,8 @@ import os
 import re
 import csv
 from lib.Analyzer import Analyzer
+from lib.Config import Config
+
 
 LANG_API_FFI = "FFI"
 LANG_API_IRI = "IMI"  #Indirect remote-invocation
@@ -89,8 +91,11 @@ class ApiClassifier ():
         return False
 
 class LangApiAnalyzer (Analyzer):
-    def __init__(self, StartNo=0, EndNo=65535, file_name='ApiSniffer'):
-        super(LangApiAnalyzer, self).__init__(file_name=file_name)
+    def __init__(self, StartNo=0, EndNo=65535, FileName='ApiSniffer'):
+        super(LangApiAnalyzer, self).__init__(FileName=FileName)
+
+        self.FilePath = Config.BaseDir + '/' + Config.StatisticDir
+        
         self.StartNo = StartNo
         self.EndNo   = EndNo
         self.Index   = 0
@@ -123,7 +128,7 @@ class LangApiAnalyzer (Analyzer):
 
         # Default file 
         Header = ['id', 'languages', 'classifier', 'clfType', 'fileType']
-        SfFile = self.file_path + "ApiSniffer" + '.csv'
+        SfFile = self.FilePath + "/ApiSniffer.csv"
         with open(SfFile, 'w', encoding='utf-8') as CsvFile:       
             writer = csv.writer(CsvFile)
             writer.writerow(Header)      
@@ -131,10 +136,10 @@ class LangApiAnalyzer (Analyzer):
     def AddClf (self, Classifier):
         self.FFIClfList.append (Classifier)
 
-    def __UpdateFinal(self):
+    def UpdateFinal(self):
         self.SaveData ()
 
-    def __UpdateAnalysis(self, Repo):
+    def UpdateAnalysis(self, Repo):
         #print (self.Index, " -> [", self.StartNo, ", ", self.EndNo, "]")
         if self.Index < self.StartNo or self.Index > self.EndNo:
             self.Index += 1
@@ -310,14 +315,14 @@ class LangApiAnalyzer (Analyzer):
                 writer.writerow(row)
         self.AnalyzStats = {}
              
-    def __Obj2List (self, value):
-        return super(LangApiAnalyzer, self).__Obj2List (value)
+    def Obj2List (self, value):
+        return super(LangApiAnalyzer, self).Obj2List (value)
     
-    def __Obj2Dict (self, value):
-        return super(LangApiAnalyzer, self).__Obj2Dict (value)
+    def Obj2Dict (self, value):
+        return super(LangApiAnalyzer, self).Obj2Dict (value)
     
-    def __GetHeader (self, data):
-        return super(LangApiAnalyzer, self).__GetHeader (data)
+    def GetHeader (self, data):
+        return super(LangApiAnalyzer, self).GetHeader (data)
 
     def TestClf (self):
         print ("Start test FFI classifiers:")
@@ -442,6 +447,8 @@ class LangApiAnalyzer (Analyzer):
         # Class: C and C++
         ############################################################
         Class = ApiClassifier ("C-C++", LANG_API_FFI, ".c .cpp")
+        S0 = State (0, "")
+        Class.AddState(S0)
         self.FFIClfList.append (Class)
         
         ############################################################

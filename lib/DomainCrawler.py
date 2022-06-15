@@ -35,14 +35,21 @@ class DomainCrawler(Crawler):
                 print ("RepoNum: %u" %RepoNum)
                 for Repo in RepoList:
                     LangsDict = self.GetRepoLangs (Repo['languages_url'])
+                    MainLang  = self.GetMainLang (LangsDict)
+                    
                     LangsDict = self.LangValidate (LangsDict)
                     if LangsDict == None:
                         continue
                     
-                    print ("\t[%u][%u] --> %s" %(len(self.RepoList), Repo['id'], Repo['clone_url']))
                     Langs = list(LangsDict.keys ())
+                    if len (Langs) == 0:
+                        continue
+
+                    print ("\t[%u][%u] --> %s" %(len(self.RepoList), Repo['id'], Repo['clone_url']))
                     RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['topics'], 
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
+                    RepoData.SetMainLang(MainLang)
+                    
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)
         self.Save()

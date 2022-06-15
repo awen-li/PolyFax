@@ -11,7 +11,7 @@ from lib.Config import Config
     
 class Crawler():
     def __init__(self, FileName="RepositoryList.csv", UserName="", Token="", LangList=[], MaxGrabNum=-1):
-        self.FileName = "Data/" + FileName
+        self.FileName = Config.BaseDir + '/' + FileName
         self.Username = UserName
         self.Password = Token
         self.LangList = LangList
@@ -64,7 +64,7 @@ class Crawler():
                     writer.writerow(Header)
                     WriteHeader = True
                 
-                row = [Repo.Id, Repo.Star, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
+                row = [Repo.Id, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
                 writer.writerow(row)
         return
 
@@ -78,10 +78,19 @@ class Crawler():
             if WriteHeader == False:
                 Header = Repo.__dict__.keys ()
                 writer.writerow(Header)
-            Row = [Repo.Id, Repo.Star, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
+            Row = [Repo.Id, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
             writer.writerow(Row)
         return
 
+    def GetMainLang (self, LangsDict):
+        MaxSize  = 0
+        MainLang = ''
+        for lang, size in LangsDict.items ():
+            if size > MaxSize:
+                MaxSize  = size
+                MainLang = lang
+        return MainLang
+            
     def LangValidate (self, LangsDict):
         if len (self.LangList) == 0:
             return LangsDict
@@ -132,12 +141,18 @@ class Crawler():
 
                 print ("RepoNum: %u" %RepoNum)
                 for Repo in RepoList:
-                    LangsDict = self.GetRepoLangs (Repo['languages_url'])                    
-                    print ("\t[%u][%u] --> %s" %(len(self.RepoList), Repo['id'], Repo['clone_url']))
+                    LangsDict = self.GetRepoLangs (Repo['languages_url'])
+                    MainLang  = self.GetMainLang (LangsDict)
+                    
                     Langs = list(LangsDict.keys ())[0:6]
+                    if len (Langs) == 0:
+                        continue
 
+                    print ("\t[%u][%u] --> %s" %(len(self.RepoList), Repo['id'], Repo['clone_url']))
                     RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['topics'], 
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
+                    RepoData.SetMainLang(MainLang)
+                    
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)
         self.Save()
