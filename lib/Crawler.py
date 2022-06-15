@@ -6,13 +6,23 @@ import sys, getopt
 import pandas as pd
 from time import sleep
 from lib.Repository import Repository
+from lib.Config import Config
+
     
 class Crawler():
-    def __init__(self, FileName="RepositoryList.csv", UserName="", Token=""):
-        self.FileName = FileName
+    def __init__(self, FileName="RepositoryList.csv", UserName="", Token="", LangList=[], MaxGrabNum=-1):
+        self.FileName = "Data/" + FileName
         self.Username = UserName
         self.Password = Token
+        self.LangList = LangList
+        
         self.RepoList = {}
+
+        self.MaxStar = 15000
+        self.MinStar = 1000
+        self.Delta   = 100
+
+        self.MaxGrabNum = MaxGrabNum
 
     def HttpCall(self, Url):
         Result = requests.get(Url,
@@ -40,53 +50,96 @@ class Crawler():
         #Langs = [lang.lower() for lang in Langs.keys()]
         return Langs
 
-    def Save (self):
-        Header = ['id', 'Star', 'Languages', 'ApiUrl', 'CloneUrl', 'Description']
+    def Save (self, Header=None):
+        if len (self.RepoList) == 0:
+            return
+        
+        WriteHeader = False
         with open(self.FileName, 'w', encoding='utf-8') as CsvFile:       
             writer = csv.writer(CsvFile)
-            writer.writerow(Header)  
+            
             for Id, Repo in self.RepoList.items():
-                row = [Repo.Id, Repo.Star, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Descripe]
+                if WriteHeader == False:
+                    Header = Repo.__dict__.keys()
+                    writer.writerow(Header)
+                    WriteHeader = True
+                
+                row = [Repo.Id, Repo.Star, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
                 writer.writerow(row)
         return
 
     def AppendSave (self, Repo):
-        IsNew = False
-        if not os.path.exists (self.FileName):
-            IsNew = True
-        
+        WriteHeader = False
+        if os.path.exists (self.FileName):
+            WriteHeader = True
+
         with open(self.FileName, 'a+', encoding='utf-8') as CsvFile:
             writer = csv.writer(CsvFile)      
-            if IsNew == True:
-                Header = ['id', 'Star', 'Languages', 'ApiUrl', 'CloneUrl', 'Description']
+            if WriteHeader == False:
+                Header = Repo.__dict__.keys ()
                 writer.writerow(Header)
-            Row = [Repo.Id, Repo.Star, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Descripe]
+            Row = [Repo.Id, Repo.Star, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
             writer.writerow(Row)
         return
 
+    def LangValidate (self, LangsDict):
+        if len (self.LangList) == 0:
+            return LangsDict
+        
+        Langs = list(LangsDict.keys ())[0:6]
+
+        # compute all language size
+        Size = 0
+        for lg in Langs:
+            Size += LangsDict[lg]
+
+        # compute proportion for each langage
+        ValidLangs = {}
+        for lang in LangsDict:
+            if lang not in self.LangList:
+                continue
+            ptop = LangsDict[lang]*100.0/Size
+            if ptop < 5:
+                continue
+            ValidLangs [lang] = ptop
+
+        if len (ValidLangs) < 2:
+            return None
+
+        return ValidLangs
+
     def GrabProject (self):
         PageNum = 10  
-        Star    = 15000
-        Delta   = 100
-        while Star > 100:
+        Star    = self.MaxStar
+        Delta   = self.Delta
+        while Star > self.MinStar:
             Bstar = Star - Delta
             Estar = Star
             Star  = Star - Delta
 
             StarRange = str(Bstar) + ".." + str(Estar)
             for PageNo in range (1, PageNum+1):
-                print ("===>[Star]: ", StarRange, ", [Page] ", PageNo)
+                print ("===>[Star]: ", StarRange, ", [Page] ", PageNo, end=", ")
                 Result = self.GetPageofRepos (StarRange, PageNo)
                 if 'items' not in Result:
                     break
+                
                 RepoList = Result['items']
+                RepoNum  = len (RepoList)       
+                if RepoNum == 0:
+                    print ("")
+                    break
+
+                print ("RepoNum: %u" %RepoNum)
                 for Repo in RepoList:
                     LangsDict = self.GetRepoLangs (Repo['languages_url'])                    
                     print ("\t[%u][%u] --> %s" %(len(self.RepoList), Repo['id'], Repo['clone_url']))
-                    Langs = list(LangsDict.keys ())[0:3]
-                    RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['description'])
+                    Langs = list(LangsDict.keys ())[0:6]
+
+                    RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['topics'], 
+                                           Repo['description'], Repo['created_at'], Repo['pushed_at'])
                     self.RepoList[Repo['id']] = RepoData
-                    self.Appendix (RepoData)
+                    self.AppendSave (RepoData)
         self.Save()
 
     def Clone (self):
@@ -112,30 +165,4 @@ class Crawler():
 
             CleanCmd = "find . -name \".git\" | xargs rm -rf"
             os.system (CleanCmd)
-
-    def Sniffer (self, Dir):
-        CRegex  = "#include <Python.h>|PyObject|Py_Initialize|PyMethodDef|cdll.LoadLibrary"
-        PyRegex = "from cffi import FFI|from ctypes import|from.*cimport|cdef extern from"
-        RuleSet = {".c":CRegex, ".py":PyRegex}
-        
-        RepoDirs = os.walk(Dir)
-        for Path, Dirs, Fs in RepoDirs:
-            for f in Fs:
-                File = os.path.join(Path, f)
-                if not os.path.exists (File):
-                    continue
-            
-                Ext = os.path.splitext(File)[-1].lower()
-                Rules = RuleSet.get (Ext)
-                if Rules == None:
-                    continue
-                with open (File, "r", encoding="utf8", errors="ignore") as sf:
-                    for line in sf:
-                        if len (line) < 4:
-                            continue
-
-                        if re.search(Rules, line) != None:
-                            print (Dir, " -> Python interacts with C.")
-                            return True
-        return False
 

@@ -2,7 +2,7 @@
 import os
 
 
-class Config():
+class Config ():
 
     START_YEAR   = 2013
     END_YEAR     = 2022
@@ -27,11 +27,11 @@ class Config():
 
     CMMT_DIR     = BaseDir + "/CmmtSet/"
     if not os.path.exists (CMMT_DIR):
-        os.mkdir (CMMT_DIR)
+        os.makedirs (CMMT_DIR)
         
     CMMT_STAT_DIR= BaseDir + "/" + OriginStat + "/CmmtSet/"
     if not os.path.exists (CMMT_STAT_DIR):
-        os.mkdir (CMMT_STAT_DIR)
+        os.makedirs (CMMT_STAT_DIR)
 
     KEYWORD_FILE = BaseDir + "/" + OriginCollect + "/keywords.txt"
 
@@ -39,11 +39,11 @@ class Config():
 
     TagSet       = BaseDir + "/TagSet"
     if not os.path.exists (TagSet):
-        os.mkdir (TagSet)
+        os.makedirs (TagSet)
 
     IssueDir     = BaseDir + "/Issues"
     if not os.path.exists (IssueDir):
-        os.mkdir (IssueDir)
+        os.makedirs (IssueDir)
 
     @staticmethod
     def IssueFile (id):
@@ -55,7 +55,7 @@ class Config():
 
     @staticmethod
     def CmmtStatFile (id):
-        return (System.CMMT_STAT_DIR + str(id))
+        return (Config.CMMT_STAT_DIR + str(id))
 
     @staticmethod
     def IsExist (file):

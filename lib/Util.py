@@ -106,7 +106,7 @@ class Util:
     # This function reads in all the rows of a csv file and prepares them for processing
     def read_in_data(file_path, file_name, class_name):
         file_name = file_path + file_name + '.csv'
-        Process_Data.check_if_path_exist(file=file_name)
+        Util.check_if_path_exist(file=file_name)
         list_of_objects = []
         # Opens the CSV file for reading
         with open(file_name, 'r') as csv_file:
@@ -120,16 +120,13 @@ class Util:
                 if is_header_row:
                     is_header_row = False  # We only want to execute this conditional once
                     # Creates the field names for our python object from csv header row fields
-                    tuple_format = Process_Data.named_tuple_format(row)
+                    tuple_format = Util.named_tuple_format(row)
                     continue
                 # Formats the row's fields into their correct type
                 for index in range(0, len(row), 1):
-                    row[index] = Process_Data.jsonString_to_object(row[index])
+                    row[index] = Util.jsonString_to_object(row[index])
                 # This line converts the row into an python objects
-                new_object = Process_Data.convert_to_named_tuple(class_name=class_name,
-                                                                 dictionary=tuple_format,
-                                                                 values=row
-                                                                 )
+                new_object = Util.convert_to_named_tuple(class_name=class_name, dictionary=tuple_format, values=row)
                 list_of_objects.append(new_object)
         return list_of_objects
 

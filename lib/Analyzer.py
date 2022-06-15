@@ -7,6 +7,7 @@ from progressbar import ProgressBar
 from lib.Config import Config
 from lib.Util import Util
 
+
 csv.field_size_limit(sys.maxsize)
 
 
@@ -43,6 +44,9 @@ class Analyzer(metaclass=abc.ABCMeta):
             for Key, Value in Data.items():
                 Row = self.__Obj2List (Value)
                 writer.writerow(Row)
+
+    def LoadRepoList (FileName="RepoList.csv"):
+        pass
 
     @abc.abstractmethod
     def __Obj2List (self, Value):

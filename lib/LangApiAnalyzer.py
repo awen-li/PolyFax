@@ -1,9 +1,8 @@
-##### LangFfiSniffer.py #####
+
 import os
 import re
 import csv
-from lib.Process_Data import Process_Data
-from lib.Collect_Research_Data import Collect_Research_Data
+from lib.Analyzer import Analyzer
 
 LANG_API_FFI = "FFI"
 LANG_API_IRI = "IMI"  #Indirect remote-invocation
@@ -89,9 +88,9 @@ class ApiClassifier ():
                         StateStack.append (next)
         return False
 
-class LangApiSniffer(Collect_Research_Data):
+class LangApiAnalyzer (Analyzer):
     def __init__(self, StartNo=0, EndNo=65535, file_name='ApiSniffer'):
-        super(LangApiSniffer, self).__init__(file_name=file_name)
+        super(LangApiAnalyzer, self).__init__(file_name=file_name)
         self.StartNo = StartNo
         self.EndNo   = EndNo
         self.Index   = 0
@@ -132,23 +131,23 @@ class LangApiSniffer(Collect_Research_Data):
     def AddClf (self, Classifier):
         self.FFIClfList.append (Classifier)
 
-    def _update(self):
-        self.save_data ()
+    def __UpdateFinal(self):
+        self.SaveData ()
 
-    def _update_statistics(self, repo_item):
+    def __UpdateAnalysis(self, Repo):
         #print (self.Index, " -> [", self.StartNo, ", ", self.EndNo, "]")
         if self.Index < self.StartNo or self.Index > self.EndNo:
             self.Index += 1
             return
         
-        ReppId  = repo_item.id
+        ReppId  = Repo.id
         RepoDir = "./Data/Repository/" + str(ReppId)
         if not os.path.exists (RepoDir):
             self.Index += 1
             return
         
         TopLangs = self.TopLanguages.keys()
-        Langs = [lang for lang in repo_item.all_languages if lang in TopLangs]
+        Langs = [lang for lang in Repo.Langs if lang in TopLangs]
 
         #print ("Scan ", RepoDir, Langs)
         self.Sniffer(ReppId, Langs, RepoDir)
@@ -286,15 +285,15 @@ class LangApiSniffer(Collect_Research_Data):
                 Types += "_" + type
         return Types
     
-    def save_data(self, file_name=None):
-        if (len(self.research_stats) == 0):
+    def SaveData (self, FileName=None):
+        if (len(self.AnalyzStats) == 0):
             return
         #Header = ['id', ''langs', 'classifier', 'clfType', 'fileType']
-        SfFile = self.file_path + self.file_name + '.csv'
+        SfFile = self.FilePath + self.FileName + '.csv'
         with open(SfFile, 'w', encoding='utf-8') as CsvFile:       
             writer = csv.writer(CsvFile)
             #writer.writerow(Header)  
-            for Id, ClfList in self.research_stats.items():
+            for Id, ClfList in self.AnalyzStats.items():
                 Names = []
                 Types = []
                 FileTypes = []
@@ -309,16 +308,16 @@ class LangApiSniffer(Collect_Research_Data):
                 row = [Id, self.Langs [Id], Names, Types, FileTypes]
                 print (row)
                 writer.writerow(row)
-        self.research_stats = {}
+        self.AnalyzStats = {}
              
-    def _object_to_list(self, value):
-        return super(LangApiSniffer, self)._object_to_list(value)
+    def __Obj2List (self, value):
+        return super(LangApiAnalyzer, self).__Obj2List (value)
     
-    def _object_to_dict(self, value):
-        return super(LangApiSniffer, self)._object_to_dict(value)
+    def __Obj2Dict (self, value):
+        return super(LangApiAnalyzer, self).__Obj2Dict (value)
     
-    def _get_header(self, data):
-        return super(LangApiSniffer, self)._get_header(data)
+    def __GetHeader (self, data):
+        return super(LangApiAnalyzer, self).__GetHeader (data)
 
     def TestClf (self):
         print ("Start test FFI classifiers:")

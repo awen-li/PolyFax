@@ -5,51 +5,34 @@ from lib.Crawler import Crawler
 
     
 class DomainCrawler(Crawler):
-    def __init__(self, FileName="RepositoryList-Domain.csv", UserName="", Token="", LangList=[]):
+    def __init__(self, FileName="RepositoryList-Domain.csv", UserName="", Token="", LangList=[], Domains=[]):
         super(LangCrawler, self).__init__(FileName, UserName, Token)
         self.LangList = LangList
-        self.Domains  = []
-
-    def LangValidate (self, LangsDict):
-        Langs = list(LangsDict.keys ())[0:6]
-
-        # compute all language size
-        Size = 0
-        for lg in Langs:
-            Size += LangsDict[lg]
-
-        # compute proportion for each langage
-        ValidLangs = {}
-        for lang in LangsDict:
-            if lang not in self.LangList:
-                continue
-            ptop = LangsDict[lang]*100.0/Size
-            if ptop < 5:
-                continue
-            ValidLangs [lang] = ptop
-
-        if len (ValidLangs) < 2:
-            return None
-
-        return ValidLangs
+        self.Domains  = Domains
 
     def GrabProject (self):
         PageNum = 10  
-        Star    = 15000
-        Delta   = 100
-        while Star > 100:
+        Star    = self.MaxStar
+        Delta   = self.Delta
+        while Star > self.MinStar:
             Bstar = Star - Delta
             Estar = Star
             Star  = Star - Delta
 
             StarRange = str(Bstar) + ".." + str(Estar)
             for PageNo in range (1, PageNum+1):
-                print ("===>[Star]: ", StarRange, ", [Page] ", PageNo)
+                print ("===>[Star]: ", StarRange, ", [Page] ", PageNo, end=", ")
                 Result = self.GetRepoByStar (StarRange, PageNo)
                 if 'items' not in Result:
                     break
                 
                 RepoList = Result['items']
+                RepoNum  = len (RepoList)       
+                if RepoNum == 0:
+                    print ("")
+                    break
+                
+                print ("RepoNum: %u" %RepoNum)
                 for Repo in RepoList:
                     LangsDict = self.GetRepoLangs (Repo['languages_url'])
                     LangsDict = self.LangValidate (LangsDict)
@@ -58,9 +41,10 @@ class DomainCrawler(Crawler):
                     
                     print ("\t[%u][%u] --> %s" %(len(self.RepoList), Repo['id'], Repo['clone_url']))
                     Langs = list(LangsDict.keys ())
-                    RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['description'])
+                    RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['topics'], 
+                                           Repo['description'], Repo['created_at'], Repo['pushed_at'])
                     self.RepoList[Repo['id']] = RepoData
-                    self.Appendix (RepoData)
+                    self.AppendSave (RepoData)
         self.Save()
 
     
