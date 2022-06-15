@@ -23,12 +23,18 @@ class LangCrawler(Crawler):
         Star    = self.MaxStar
         Delta   = self.Delta
         while Star > self.MinStar:
+            if self.MaxGrabNum != -1 and len(self.RepoList) >= self.MaxGrabNum:
+                break;
+                        
             Bstar = Star - Delta
             Estar = Star
             Star  = Star - Delta
 
             StarRange = str(Bstar) + ".." + str(Estar)
             for PageNo in range (1, PageNum+1):
+                if self.MaxGrabNum != -1 and len(self.RepoList) >= self.MaxGrabNum:
+                    break;
+                        
                 print ("===>[Star]: ", StarRange, ", [Page] ", PageNo, end=", ")
                 Result = self.GetRepoByStar (StarRange, PageNo)
                 if 'items' not in Result:
@@ -63,8 +69,7 @@ class LangCrawler(Crawler):
                     self.AppendSave (RepoData)
                     
                     if self.MaxGrabNum != -1 and len(self.RepoList) >= self.MaxGrabNum:
-                        Star = self.MinStar-1
                         break;
-        self.Save()
+        #self.Save()
 
     

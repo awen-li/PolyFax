@@ -1,28 +1,25 @@
 
 import os
-from itertools import combinations
 from lib.Crawler import Crawler
-
+from lib.Repository import Repository
     
 class DomainCrawler(Crawler):
-    def __init__(self, FileName="RepositoryList-Domain.csv", UserName="", Token="", LangList=[], Domains=[]):
-        super(LangCrawler, self).__init__(FileName, UserName, Token)
-        self.LangList = LangList
+    def __init__(self, FileName="RepositoryList.csv", UserName="", Token="", LangList=[], Domains=[], MaxGrabNum=-1):
+        super(DomainCrawler, self).__init__(FileName, UserName, Token, LangList, MaxGrabNum)
         self.Domains  = Domains
 
     def GrabProject (self):
         PageNum = 10  
-        Star    = self.MaxStar
-        Delta   = self.Delta
-        while Star > self.MinStar:
-            Bstar = Star - Delta
-            Estar = Star
-            Star  = Star - Delta
-
-            StarRange = str(Bstar) + ".." + str(Estar)
+        for Domain in self.Domains:
+            if self.MaxGrabNum != -1 and len(self.RepoList) >= self.MaxGrabNum:
+                break;
+                        
             for PageNo in range (1, PageNum+1):
-                print ("===>[Star]: ", StarRange, ", [Page] ", PageNo, end=", ")
-                Result = self.GetRepoByStar (StarRange, PageNo)
+                if self.MaxGrabNum != -1 and len(self.RepoList) >= self.MaxGrabNum:
+                    break;
+                
+                print ("===>[Domain]: ", Domain, ", [Page] ", PageNo, end=", ")
+                Result = self.GetRepoByDomain (Domain, PageNo)
                 if 'items' not in Result:
                     break
                 
@@ -45,6 +42,10 @@ class DomainCrawler(Crawler):
                     if len (Langs) == 0:
                         continue
 
+                    Stars = Repo['stargazers_count']
+                    if Stars < self.MinStar:
+                        continue
+
                     print ("\t[%u][%u] --> %s" %(len(self.RepoList), Repo['id'], Repo['clone_url']))
                     RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['topics'], 
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
@@ -52,6 +53,9 @@ class DomainCrawler(Crawler):
                     
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)
-        self.Save()
+
+                    if self.MaxGrabNum != -1 and len(self.RepoList) >= self.MaxGrabNum:
+                        break;
+        #self.Save()
 
     

@@ -2,6 +2,8 @@
 import os
 import sys, getopt
 from lib.LangCrawler import LangCrawler
+from lib.DomainCrawler import DomainCrawler
+
 from lib.LangApiAnalyzer import LangApiAnalyzer
 
 def Daemonize(pid_file=None):
@@ -45,9 +47,9 @@ def Help ():
 def GetCrawler (Type):
     Cl = None
     if (Type == "lang"):
-        Cl = LangCrawler(UserName="Daybreak2019", Token="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", LangList=[], MaxGrabNum=10)
+        Cl = LangCrawler(UserName="Daybreak2019", Token="", LangList=[], MaxGrabNum=10)
     elif (Type  == "domain"):
-        Cl = LangCrawler(UserName="", Token="", LangList=[])
+        Cl = DomainCrawler(UserName="Daybreak2019", Token="", Domains=['web', 'hardware'], MaxGrabNum=10)
     else:
         Help ()
         exit (0)

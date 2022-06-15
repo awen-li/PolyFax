@@ -23,6 +23,7 @@ class Crawler():
         self.Delta   = 100
 
         self.MaxGrabNum = MaxGrabNum
+        os.rename (self.FileName, self.FileName+"-back.csv")
 
     def HttpCall(self, Url):
         Result = requests.get(Url,
@@ -129,7 +130,7 @@ class Crawler():
             StarRange = str(Bstar) + ".." + str(Estar)
             for PageNo in range (1, PageNum+1):
                 print ("===>[Star]: ", StarRange, ", [Page] ", PageNo, end=", ")
-                Result = self.GetPageofRepos (StarRange, PageNo)
+                Result = self.GetRepoByStar (StarRange, PageNo)
                 if 'items' not in Result:
                     break
                 
@@ -155,7 +156,7 @@ class Crawler():
                     
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)
-        self.Save()
+        #self.Save()
 
     def Clone (self):
         BaseDir = Config.BaseDir + "/Repository/"
