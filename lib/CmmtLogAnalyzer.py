@@ -23,7 +23,6 @@ class SeCategory ():
         self.category = category
         self.keywords = keywords
         self.count = 0
-        self.reEngine = None
 
     def IsMatch (self, keyword):
         if (keyword in self.keywords):
@@ -47,7 +46,7 @@ class CmmtLogs():
 
 class CmmtLogAnalyzer(Analyzer):
 
-    def __init__(self, StartNo=0, EndNo=65535, RegexMode=False, FileName='CmmtLogs_Stats'):
+    def __init__(self, StartNo=0, EndNo=65535, RegexMode=False, FileName='CmmtLogAnalyzer.csv'):
         super(CmmtLogAnalyzer, self).__init__(FileName=FileName)
         self.RegexMode = RegexMode 
         self.Scrubber  = Scrubber ()
@@ -208,31 +207,32 @@ class CmmtLogAnalyzer(Analyzer):
 
     def IsProcessed (self, CmmtStatFile):
         CmmtStatFile = CmmtStatFile + ".csv"
-        return Config.is_exist (CmmtStatFile)
+        return Config.IsExist (CmmtStatFile)
 
     def IsSegFin (self, RepoNum):
-        if ((RepoNum < self.start_no) or (RepoNum >= self.end_no)):
+        if ((RepoNum < self.StartNo) or (RepoNum >= self.EndNo)):
             return True
         return False  
                 
-    def __UpdateAnalysis(self, RepoItem):
+    def UpdateAnalysis(self, RepoItem):
         StartTime = time.time()
 
-        if ((RepoItem.languages_used < 2) or (len(RepoItem.language_combinations) == 0)):
+        LangNum = len (RepoItem.Langs)
+        if LangNum < 2 :
             return
 
         self.RepoNum += 1
         if (self.IsSegFin (self.RepoNum)):
             return
         
-        RepoId   = RepoItem.id
+        RepoId   = RepoItem.Id
         CmmtFile = Config.CmmtFile (RepoId)
-        if (Config.is_exist(CmmtFile) == False):
+        if (Config.IsExist (CmmtFile) == False):
             return
 
         cdf = pd.read_csv(CmmtFile)
         CmmtStatFile = Config.CmmtStatFile (RepoId)
-        if self.IsProcessed (cmmt_stat_file) or os.path.exists(CmmtStatFile):
+        if self.IsProcessed (CmmtStatFile) or os.path.exists(CmmtStatFile):
             if (cdf.shape[0] < self.MaxCommitNum):
                 self.CommitNum += cdf.shape[0]
             else:
@@ -259,15 +259,15 @@ class CmmtLogAnalyzer(Analyzer):
             
             if Clf != None:
                 #print (Clf)
-                No = len (self.research_stats)
-                self.research_stats[No] = CmmtLogs (row['sha'], message, Clf, Matched)
+                No = len (self.AnalyzStats)
+                self.AnalyzStats[No] = CmmtLogs (row['sha'], message, Clf, Matched)
                 print ("<%d>[%d/%d] retrieve cmmits -> %d" %(self.RepoNum, index, cdf.shape[0], No))
             if (index >= self.MaxCommitNum):
                 break
 
         #save by repository
         print ("[%u]%u -> accumulated commits: %u, timecost:%u s" %(self.RepoNum, RepoId, self.CommitNum, int(time.time()-StartTime)) )
-        self.SaveData (CmmtStatFile)
+        self.SaveData (str(RepoId))
         self.AnalyzStats = {}
 
     def ClassifySeC (self, Msg):
@@ -286,7 +286,7 @@ class CmmtLogAnalyzer(Analyzer):
             #print ("@@@@ Match None!!!")
             return "None"
         
-    def __UpdateFinal (self):
+    def UpdateFinal (self):
         print ("Final: repo_num: %u -> accumulated commits: %u" %(self.RepoNum, self.CommitNum))
 
         CmmtStatDir = os.walk("./Data/StatData/CmmtSet")
@@ -303,30 +303,30 @@ class CmmtLogAnalyzer(Analyzer):
                     for Id, Sec in self.SeCategoryStats.items():
                         if Sec.category == Clf:
                             Sec.count += 1                 
-        super(CmmtLogAnalyzer, self).SaveData2 (self.SeCategoryStats, "./Data/StatData/SeCategory_Stats")
+        super(CmmtLogAnalyzer, self).SaveData2 ("/StatData/SeCategory_Stats", self.SeCategoryStats[0].__dict__, self.SeCategoryStats)
         
 
     def LoadKeywords(self):
-        df_keywords = pd.read_table(System.KEYWORD_FILE)
+        df_keywords = pd.read_table(Config.KEYWORD_FILE)
         df_keywords.columns = ['key']
         return df_keywords['key']
 
-    def SaveData (self, file_name=None):
-        if (len(self.research_stats) == 0):
-            if file_name != None:
-                Empty = "touch " + file_name
+    def SaveData (self, FileName=None):
+        if (len(self.AnalyzStats) == 0):
+            if FileName != None:
+                Empty = "touch " + FileName
                 os.system (Empty)
             return
-        super(CmmtLogAnalyzer, self).SaveData2 (self.AnalyzStats, file_name)
+        super(CmmtLogAnalyzer, self).SaveData2 ("/StatData/CmmtSet/" + FileName, self.AnalyzStats[0].__dict__, self.AnalyzStats)
          
-    def __Obj2List (self, value):
-        return super(CmmtLogAnalyzer, self).__Obj2List (value)
+    def Obj2List (self, value):
+        return super(CmmtLogAnalyzer, self).Obj2List (value)
 
-    def __Obj2Dict (self, value):
-        return super(CmmtLogAnalyzer, self).__Obj2Dict (value)
+    def Obj2Dict (self, value):
+        return super(CmmtLogAnalyzer, self).Obj2Dict (value)
 
-    def __GetHeader (self, data):
-        return super(CmmtLogAnalyzer, self).__GetHeader (data)
+    def GetHeader (self, data):
+        return super(CmmtLogAnalyzer, self).GetHeader (data)
 
 
 class IssueItem():
@@ -426,7 +426,7 @@ class IssueAnalyzer (Analyzer):
         self.save_data (IssueFile)
         self.AnalyzStats = {}
 
-    def __UpdateFinal (self):
+    def UpdateFinal (self):
         pass
 
     def SaveData (self, FileName=None):
@@ -437,12 +437,12 @@ class IssueAnalyzer (Analyzer):
             return
         super(IssueAnalyzer, self).SaveData2 (self.AnalyzStats, FileName)
                      
-    def __Obj2List(self, value):
+    def Obj2List(self, value):
         return super(IssueAnalyzer, self).__Obj2List (value)
             
-    def __Obj2Dict(self, value):
+    def Obj2Dict(self, value):
         return super(IssueAnalyzer, self).__Obj2Dict (value)
             
-    def __GetHeader(self, data):
+    def GetHeader(self, data):
         return super(IssueAnalyzer, self).__GetHeader (data)
     

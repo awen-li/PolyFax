@@ -1,6 +1,6 @@
 
 import nltk
-nltk.download('stopwords');nltk.download('brown');nltk.download('punkt');nltk.download('wordnet')
+nltk.download('stopwords');nltk.download('brown');nltk.download('punkt');nltk.download('wordnet'); nltk.download('omw-1.4')
 from nltk.corpus import stopwords
 import numpy as np
 from gensim.models import Word2Vec
@@ -56,6 +56,15 @@ class Scrubber ():
     def Subject(self, text, min_len=4):
         text_blob = TextBlob(text)
         noun_str  = ' '.join(list(text_blob.noun_phrases))
-        words = self.preprocess_text(noun_str, min_len)
-        return words        
+        words = self.PreprocessText(noun_str, min_len)
+        return words
+
+    def Cleaning(self, Text, min_len=3, max_len=16):
+        Text = self.CleanText (Text)       
+        words = nltk.word_tokenize(Text)
+        words = [lemmatizer.lemmatize(word) for word in words]
+        stopwords_list = stopwords.words('english') 
+        words = [word for word in words if word not in stopwords_list and len(word) >= min_len and len(word) < max_len]
+        #words = list (set (words))
+        return " ".join(words)
          

@@ -28,16 +28,17 @@ class Analyzer(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def SaveData (self, data, FileName=None):
         if (FileName == None):
-            FileName = self.file_name
-        self.__WriteCsv (data, file_name)
+            FileName = self.FileName
+        self.__WriteCsv (data, FileName)
 
     def SaveData2 (self, FileName, Header, Dict):
         FilePath = self.FilePath + FileName + '.csv'      
         with open(FilePath, 'w') as CsvFile:
             W = csv.writer(CsvFile)            
             W.writerow(Header)
-            for item in Dict.items():
-                W.writerow(item)
+            for Key, Value in Dict.items():
+                Row = self.Obj2List (Value)
+                W.writerow(Row)
 
     def __WriteCsv (self, Data, FileName):
         CurFile = self.FilePath + FileName
@@ -47,7 +48,7 @@ class Analyzer(metaclass=abc.ABCMeta):
             W = csv.writer(CsvFile)
             W.writerow(self.__GetHeader (Data))
             for Key, Value in Data.items():
-                Row = self.__Obj2List (Value)
+                Row = self.Obj2List (Value)
                 writer.writerow(Row)
 
     def LoadRepoList (self, FileName="RepositoryList.csv"):
@@ -57,7 +58,6 @@ class Analyzer(metaclass=abc.ABCMeta):
             RepoData = Repository (row['Id'], row['Star'], row['Langs'], row['ApiUrl'], row['CloneUrl'], row['Topics'], 
                                    row['Descripe'], row['Created'], row['Pushed'])
             self.RepoList.append (RepoData)
-        print (self.RepoList)
 
     @abc.abstractmethod
     def Obj2List (self, Value):

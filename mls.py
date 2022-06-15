@@ -4,7 +4,6 @@ import sys, getopt
 from lib.LangCrawler import LangCrawler
 from lib.DomainCrawler import DomainCrawler
 
-from lib.LangApiAnalyzer import LangApiAnalyzer
 
 def Daemonize(pid_file=None):
     pid = os.fork()
@@ -38,6 +37,7 @@ def Help ():
     print ("====           PolyFax Help Information         ====")
     print ("====================================================")
     print ("= python mls.py -a crawler -t <lang/domain>")
+    print ("= python mls.py -a crawler-cmmt -s <start-no> -e <end-no>")
     print ("= python mls.py -a api")
     print ("= python mls.py -a cmmt")
     print ("= python mls.py -a all")
@@ -59,11 +59,13 @@ def main(argv):
     IsDaemon = False
     Type = 'lang'
     Act  = 'crawler'
+    StartNo = 0
+    EndNo   = 65535
     
     RepoDir  = ""
 
     try:
-        opts, args = getopt.getopt(argv,"dt:a:",["Type="])
+        opts, args = getopt.getopt(argv,"hdt:a:s:e:",["Type="])
     except getopt.GetoptError:
         Help ()
         sys.exit(2)
@@ -74,28 +76,52 @@ def main(argv):
             Act = arg;
         elif opt in ("-d", "--daemon"):
             IsDaemon = True;
+        elif opt in ("-s", "--start number"):
+            StartNo = int (arg);
+        elif opt in ("-e", "--end number"):
+            EndNo = int (arg);
+        elif opt in ("-h", "--help"):
+            Help ()
+            sys.exit(2)
 
     if IsDaemon == True:
         Daemonize ()
 
+    from lib.CmmtCrawler import CmmtCrawler
+    from lib.LangApiAnalyzer import LangApiAnalyzer
+    from lib.CmmtLogAnalyzer import CmmtLogAnalyzer
+
     if Act == 'all':
-        # 1.  grap the project 
+        # 1.  grab the project 
         Cl = GetCrawler (Type)
         Cl.Grab ()
 
-        # 2. analyze commits
+        # 2. grab commits
+        CmmtGraber= CmmtCrawler (RepoList=Cl.RepoList)
+        CmmtGraber.Clone ()
 
-        # 3. analyze the APIs
+        # 3. analyze commits
+        Analyzer = CmmtLogAnalyzer ()
+        Analyzer.AnalyzeData (Analyzer.RepoList)
+
+        # 4. analyze the APIs
         Analyzer = LangApiAnalyzer ()
         Analyzer.AnalyzeData (Analyzer.RepoList)
     elif Act == 'crawler':
         Cl = GetCrawler (Type)
         Cl.Grab ()
+
+        CmmtGraber= CmmtCrawler (RepoList=Cl.RepoList)
+        CmmtGraber.Clone ()
+    elif Act == 'crawler-cmmt':
+        CmmtGraber= CmmtCrawler (startNo=StartNo, endNo=EndNo)
+        CmmtGraber.Clone ()
     elif Act == 'api':
         Analyzer = LangApiAnalyzer ()
         Analyzer.AnalyzeData (Analyzer.RepoList)
-    elif Act == 'cmmt':
-        Help ()
+    elif Act == 'cmmt': 
+        Analyzer = CmmtLogAnalyzer ()
+        Analyzer.AnalyzeData (Analyzer.RepoList)
     else:
         Help()
 

@@ -8,6 +8,9 @@ class DomainCrawler(Crawler):
         super(DomainCrawler, self).__init__(FileName, UserName, Token, LangList, MaxGrabNum)
         self.Domains  = Domains
 
+        if os.path.exists (self.FileName):
+            os.rename (self.FileName, self.FileName+"-back.csv")
+
     def GrabProject (self):
         PageNum = 10  
         for Domain in self.Domains:

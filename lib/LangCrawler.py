@@ -11,6 +11,9 @@ class LangCrawler(Crawler):
         self.MinLang  = 2
         self.MaxLang  = 6
         self.LangSelectList = []
+
+        if os.path.exists (self.FileName):
+            os.rename (self.FileName, self.FileName+"-back.csv")
         
     def GetLangSelections ():
         for i in range(self.MinLang, self.MaxLang+1, 1):

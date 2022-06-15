@@ -7,7 +7,6 @@ import pandas as pd
 from time import sleep
 from lib.Repository import Repository
 from lib.Config import Config
-
     
 class Crawler():
     def __init__(self, FileName="RepositoryList.csv", UserName="", Token="", LangList=[], MaxGrabNum=-1):
@@ -23,12 +22,23 @@ class Crawler():
         self.Delta   = 100
 
         self.MaxGrabNum = MaxGrabNum
-        os.rename (self.FileName, self.FileName+"-back.csv")
+
+    
+    def IsContinue (self, errcode):
+        codes = [404, 500]
+        if (errcode in codes):
+            return False
+        else:
+            return True
 
     def HttpCall(self, Url):
         Result = requests.get(Url,
                               auth=(self.Username, self.Password),
                               headers={"Accept": "application/vnd.github.mercy-preview+json"})
+        if (self.IsContinue (Result.status_code) == False):
+            print("$$$%s: %s, URL: %s" % (Result.status_code, Result.reason, Url))
+            return None
+        
         if (Result.status_code != 200 and Result.status_code != 422):
             print("Status Code %s: %s, URL: %s" % (Result.status_code, Result.reason, Url))
             sleep(300)
@@ -158,34 +168,9 @@ class Crawler():
                     self.AppendSave (RepoData)
         #self.Save()
 
-    def Clone (self):
-        BaseDir = Config.BaseDir + "/Repository/"
-        if not os.path.exists (BaseDir):
-            os.mkdir (BaseDir)
-        
-        Df = pd.read_csv(self.FileName)
-        for Index, Row in Df.iterrows():            
-            RepoId = Row['Id']        
-            RepoDir = BaseDir + str(RepoId)
-            if not os.path.exists (RepoDir):
-                os.mkdir (RepoDir)
-            else:
-                RmCmd = "rm -rf " + RepoDir + "/*"
-                os.system (RmCmd)         
-            os.chdir(RepoDir)
-
-            CloneUrl = Row['CloneUrl']
-            CloneCmd = "git clone " + CloneUrl
-            print ("[", Index, "] --> ", CloneCmd)
-            os.system (CloneCmd)
-
-            CleanCmd = "find . -name \".git\" | xargs rm -rf"
-            os.system (CleanCmd)
-
     def Grab (self):
         # grab repository list
         self.GrabProject ()
 
-        # clone all the project
-        self.Clone ()
+
 
