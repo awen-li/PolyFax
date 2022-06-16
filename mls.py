@@ -6,7 +6,7 @@ from lib.DomainCrawler import DomainCrawler
 from lib.InstanceDist import CmmtCrawlerDist, CmmtLogAnalyzerDist, LangApiAnalyzerDist
 
 
-def Daemonize(pid_file=None):
+def Daemonize():
     pid = os.fork()
     if pid:
         sys.exit(0)
@@ -22,15 +22,10 @@ def Daemonize(pid_file=None):
     sys.stdout.flush()
     sys.stderr.flush()
  
-    with open('/dev/null') as read_null, open('/dev/null', 'w') as write_null:
-        os.dup2(read_null.fileno(), sys.stdin.fileno())
-        os.dup2(write_null.fileno(), sys.stdout.fileno())
-        os.dup2(write_null.fileno(), sys.stderr.fileno())
- 
-    if pid_file:
-        with open(pid_file, 'w+') as f:
-            f.write(str(os.getpid()))
-        atexit.register(os.remove, pid_file)
+    #with open('/dev/null') as read_null, open('/dev/null', 'w') as write_null:
+    #    os.dup2(read_null.fileno(), sys.stdin.fileno())
+    #    os.dup2(write_null.fileno(), sys.stdout.fileno())
+    #    os.dup2(write_null.fileno(), sys.stderr.fileno())
 
 
 def Help ():
@@ -84,8 +79,8 @@ def main(argv):
 
     if IsDaemon == True:
         Daemonize ()
-
-    if Act == 'all':
+            
+    if Act == 'all': 
         # 1.  grab the project 
         Cl = GetCrawler (Type)
         Cl.Grab ()
