@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 from lib.Util import Util
 from lib.Analyzer import Analyzer
@@ -27,10 +26,8 @@ class IssueItem():
         
 class IssueAnalyzer (Analyzer):
     def __init__(self, StartNo=0, EndNo=65535, FileName='IssueAnalyzer.csv', UserName='', Token=''):
-        super(IssueAnalyzer, self).__init__(FileName=FileName)
+        super(IssueAnalyzer, self).__init__(StartNo=StartNo, EndNo=EndNo, FileName=FileName)
         self.RepoNum   = 0
-        self.StartNo   = StartNo
-        self.EndNo     = EndNo
         self.UserName  = UserName
         self.Token     = Token
 

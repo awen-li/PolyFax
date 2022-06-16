@@ -17,8 +17,10 @@ class Analyzer(metaclass=abc.ABCMeta):
 
     Language_Combination_Limit = 20
 
-    def __init__(self, FileName="Analyzer.csv"):
+    def __init__(self, StartNo=0, EndNo=65535, FileName="Analyzer.csv"):
         self.FileName = FileName
+        self.StartNo  = StartNo
+        self.EndNo    = EndNo
         self.FilePath = Config.BaseDir
         self.AnalyzStats = {}
 

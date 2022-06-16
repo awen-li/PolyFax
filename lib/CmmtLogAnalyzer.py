@@ -47,14 +47,12 @@ class CmmtLogs():
 class CmmtLogAnalyzer(Analyzer):
 
     def __init__(self, StartNo=0, EndNo=65535, RegexMode=False, FileName='CmmtLogAnalyzer.csv'):
-        super(CmmtLogAnalyzer, self).__init__(FileName=FileName)
+        super(CmmtLogAnalyzer, self).__init__(StartNo=StartNo, EndNo=EndNo, FileName=FileName)
         self.RegexMode = RegexMode 
         self.Scrubber  = Scrubber ()
         self.keywords  = self.LoadKeywords ()
         self.CommitNum = 0
         self.RepoNum   = 0
-        self.StartNo   = StartNo
-        self.EndNo     = EndNo
         self.MaxCommitNum = Config.MAX_CMMT_NUM
         
         self.SeCategoryStats = {}
