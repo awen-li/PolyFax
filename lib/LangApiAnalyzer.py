@@ -107,9 +107,10 @@ class LangApiAnalyzer (Analyzer):
 
         self.Langs = {}
         
-        self.TopLanguages = {"c":".c", "c++":".cpp .cc", "java":".java", "javascript":".js", "typescript":".ts", 
+        self.TopLanguages = {"c":".c", "c++":".cpp .cc", "c#":".cs", "java":".java", "javascript":".js", "typescript":".ts", 
                              "python":".py", "html":".html", "php":".php", "go":".go", "ruby":".rb", "objective-c":".m .mm", 
-                             "css":".css", "shell":".sh .zsh .bsh"}
+                             "css":".css", "shell":".sh .zsh .bsh", "assembly":".as", "kotlin":".kt", "swift":".swift",
+                             "rust":".rs", "perl":".pl", "r":".r", "scala":".scala", "dart":".dart"}
 
         # Init FFI classifier
         self.InitFfiClass ()
@@ -126,9 +127,9 @@ class LangApiAnalyzer (Analyzer):
         # Test
         self.TestClf ()
 
-        # Default file 
+        # Default file
         Header = ['id', 'languages', 'classifier', 'clfType', 'fileType']
-        SfFile = self.FilePath + self.FileName + '.csv'
+        SfFile = self.FilePath + 'ApiSniffer.csv'
         with open(SfFile, 'w', encoding='utf-8') as CsvFile:       
             writer = csv.writer(CsvFile)
             writer.writerow(Header)      

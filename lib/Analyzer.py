@@ -86,4 +86,8 @@ class Analyzer(metaclass=abc.ABCMeta):
     def UpdateAnalysis(self, CurRepo):
         print("Abstract Method that is implemented by inheriting classes")
 
+    def StartRun (self):
+        self.AnalyzeData (self.RepoList)
+        
+
    

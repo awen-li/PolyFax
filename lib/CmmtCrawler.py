@@ -57,21 +57,23 @@ class Commit ():
         
 
 class CmmtCrawler(Crawler):
-    def __init__(self, LangList=[], startNo=0, endNo=65535, RepoList={}):
+    def __init__(self, LangList=[], startNo=0, endNo=65535, RepoList={}, LangCheck=True):
         super(CmmtCrawler, self).__init__(LangList=LangList)
         
-        self.RepoList = RepoList
+        self.RepoList  = RepoList
+        self.LangCheck = LangCheck
 
         self.Commits  = []
         self.Exts = ['.h', '.c', '.cpp', '.cc', '.i', '.js', '.css', '.json', '.sh', '.jsx', '.xml', '.yml',
                      '.jade', '.scss', '.coffee', '.py', '.php', '.php3', '.ps1', '.zsh', '.bash', ".sh", '.pl', 
-                     '.go', '.sh', '.java', '.asp', '.aspx', '.ashx', '.cs', '.html', 'cls', 'csc', '.cxx', 
-                     '.hpp', '.jsp', '.pas', '.phtml', '.s', '.vbs']
+                     '.go', '.sh', '.java', '.asp', '.aspx', '.ashx', '.cs', '.html', '.cls', '.csc', '.cxx', 
+                     '.hpp', '.jsp', '.pas', '.phtml', '.s', '.vbs', '.scala', '.as', '.r', '.rb', '.dart', '.rs',
+                     '.m', '.mm', '.kt']
 
         self.startNo = startNo
         self.endNo   = endNo
 
-        self.Scrubber  = Scrubber () 
+        self.Scrubber  = Scrubber ()
 
     def WriteCommts (self, RepoId):
         CmmtFile = Config.BaseDir + "/CmmtSet/" + str (RepoId) + ".csv"
@@ -103,7 +105,10 @@ class CmmtCrawler(Crawler):
             #print ("Old langs -> ", Langs)
             return Langs
         
-    def CheckLangs (self, Langs, Date='2018-06-01'):
+    def CheckLangs (self, Langs, Date='2020-06-01'):
+        if self.LangCheck == False:
+            return True
+        
         print ("New langs -> ", Langs)
         CmmDate = None
         Cmmt = None
@@ -268,7 +273,7 @@ class CmmtCrawler(Crawler):
     def CloneLog (self, RepoId, RepoDir, Langs):
         Repo = RepoDir + "/" + os.listdir(RepoDir)[0]     
         os.chdir(Repo)
-        print ("Repo -> ", Repo)
+        print ("@@@ Repo -> ", Repo)
 
         LogFile = str (RepoId) + ".log"
         #LogCmd = "git log -20000 --date=iso -p > " + LogFile # for ParseLog
@@ -332,5 +337,9 @@ class CmmtCrawler(Crawler):
             if self.CloneLog (repo.Id, RepoDir, Langs) == True:
                 self.Clean (RepoDir)
             Config.SetTag (str(repo.Id))
+
+    def StartRun (self):
+        print ("\t[CmmtCrawler] StartNo: %d, EndNo: %d" %(self.startNo, self.endNo))
+        self.Clone ()   
             
 

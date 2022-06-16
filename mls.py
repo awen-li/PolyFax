@@ -3,6 +3,7 @@ import os
 import sys, getopt
 from lib.LangCrawler import LangCrawler
 from lib.DomainCrawler import DomainCrawler
+from lib.InstanceDist import CmmtCrawlerDist, CmmtLogAnalyzerDist, LangApiAnalyzerDist
 
 
 def Daemonize(pid_file=None):
@@ -36,20 +37,20 @@ def Help ():
     print ("====================================================")
     print ("====           PolyFax Help Information         ====")
     print ("====================================================")
-    print ("= python mls.py -a crawler -t <lang/domain>")
-    print ("= python mls.py -a crawler-cmmt -s <start-no> -e <end-no>")
-    print ("= python mls.py -a api")
-    print ("= python mls.py -a cmmt")
-    print ("= python mls.py -a all")
+    print ("= python mls.py -a crawler -t <lang/domain> -n <task num>")
+    print ("= python mls.py -a crawler-cmmt -n <task num>")
+    print ("= python mls.py -a api -n <task num>")
+    print ("= python mls.py -a cmmt -n <task num>")
+    print ("= python mls.py -a all -n <task num>")
     print ("====================================================\r\n")
 
 
 def GetCrawler (Type):
     Cl = None
     if (Type == "lang"):
-        Cl = LangCrawler(UserName="Daybreak2019", Token="", LangList=[], MaxGrabNum=10)
+        Cl = LangCrawler(UserName="xxx", Token="xxx", LangList=[])
     elif (Type  == "domain"):
-        Cl = DomainCrawler(UserName="Daybreak2019", Token="", Domains=['web', 'hardware'], MaxGrabNum=10)
+        Cl = DomainCrawler(UserName="xxx", Token="xxx", Domains=['web', 'hardware'])
     else:
         Help ()
         exit (0)
@@ -59,13 +60,12 @@ def main(argv):
     IsDaemon = False
     Type = 'lang'
     Act  = 'crawler'
-    StartNo = 0
-    EndNo   = 65535
+    TaskNum = 4
     
     RepoDir  = ""
 
     try:
-        opts, args = getopt.getopt(argv,"hdt:a:s:e:",["Type="])
+        opts, args = getopt.getopt(argv,"hdt:a:n:",["Type="])
     except getopt.GetoptError:
         Help ()
         sys.exit(2)
@@ -76,10 +76,8 @@ def main(argv):
             Act = arg;
         elif opt in ("-d", "--daemon"):
             IsDaemon = True;
-        elif opt in ("-s", "--start number"):
-            StartNo = int (arg);
-        elif opt in ("-e", "--end number"):
-            EndNo = int (arg);
+        elif opt in ("-n", "--task number"):
+            TaskNum = int (arg);
         elif opt in ("-h", "--help"):
             Help ()
             sys.exit(2)
@@ -87,41 +85,37 @@ def main(argv):
     if IsDaemon == True:
         Daemonize ()
 
-    from lib.CmmtCrawler import CmmtCrawler
-    from lib.LangApiAnalyzer import LangApiAnalyzer
-    from lib.CmmtLogAnalyzer import CmmtLogAnalyzer
-
     if Act == 'all':
         # 1.  grab the project 
         Cl = GetCrawler (Type)
         Cl.Grab ()
 
         # 2. grab commits
-        CmmtGraber= CmmtCrawler (RepoList=Cl.RepoList)
-        CmmtGraber.Clone ()
+        CCTDist = CmmtCrawlerDist (TaskNum=TaskNum, RepoList=Cl.RepoList)
+        CCTDist.Distributer ()
 
         # 3. analyze commits
-        Analyzer = CmmtLogAnalyzer ()
-        Analyzer.AnalyzeData (Analyzer.RepoList)
+        CLADist = CmmtLogAnalyzerDist (TaskNum=TaskNum, RepoList=Cl.RepoList)
+        CLADist.Distributer ()
 
         # 4. analyze the APIs
-        Analyzer = LangApiAnalyzer ()
-        Analyzer.AnalyzeData (Analyzer.RepoList)
+        LAADist = LangApiAnalyzerDist (TaskNum=TaskNum, RepoList=Cl.RepoList)
+        LAADist.Distributer ()
     elif Act == 'crawler':
         Cl = GetCrawler (Type)
         Cl.Grab ()
 
-        CmmtGraber= CmmtCrawler (RepoList=Cl.RepoList)
-        CmmtGraber.Clone ()
+        CCTDist = CmmtCrawlerDist (TaskNum=TaskNum, RepoList=Cl.RepoList)
+        CCTDist.Distributer ()
     elif Act == 'crawler-cmmt':
-        CmmtGraber= CmmtCrawler (startNo=StartNo, endNo=EndNo)
-        CmmtGraber.Clone ()
+        CCTDist = CmmtCrawlerDist (TaskNum=TaskNum)
+        CCTDist.Distributer ()
     elif Act == 'api':
-        Analyzer = LangApiAnalyzer ()
-        Analyzer.AnalyzeData (Analyzer.RepoList)
+        LAADist = LangApiAnalyzerDist (TaskNum=TaskNum)
+        LAADist.Distributer ()
     elif Act == 'cmmt': 
-        Analyzer = CmmtLogAnalyzer ()
-        Analyzer.AnalyzeData (Analyzer.RepoList)
+        CLADist = CmmtLogAnalyzerDist (TaskNum=TaskNum)
+        CLADist.Distributer ()
     else:
         Help()
 
