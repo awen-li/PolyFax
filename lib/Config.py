@@ -8,12 +8,7 @@ class Config ():
     END_YEAR     = 2022
     PAGE_COUNT   = 10
     PER_PAGE     = 100
-    RELEASE      = "release"
 
-    TOP_LANGUAGES = ["c","c++","java","c#","javascript","python","php","go","ruby", "dart", "matlab",
-                     "objective-c","assembly","scala", "perl","r","perl", "swift", "rust", "kotlin"]
-
-    VERSION_REPO_NUM = 100
 
     OriginCollect= "OriginData"
     OriginStat   = "StatData"
@@ -33,7 +28,7 @@ class Config ():
     if not os.path.exists (CMMT_STAT_DIR):
         os.makedirs (CMMT_STAT_DIR)
 
-    KEYWORD_FILE = BaseDir + "/" + OriginCollect + "/keywords.txt"
+    KEYWORD_FILE = BaseDir + "/Config/keywords.txt"
 
     MAX_CMMT_NUM = 20 * 1024
 
@@ -44,6 +39,45 @@ class Config ():
     IssueDir     = BaseDir + "/Issues"
     if not os.path.exists (IssueDir):
         os.makedirs (IssueDir)
+
+    CFG_Type = ['int', 'str', 'list']
+
+    def __init__(self, CfgFile='config.ini'):
+        self.CfgFile = CfgFile
+
+        self.CFG = {}
+        self.CFG['UserName']   = 'str'
+        self.CFG['Token']      = 'str'
+        self.CFG['TaskNum']    = 'int'
+        self.CFG['Languages']  = 'list'
+        self.CFG['Domains']    = 'list'
+        self.CFG['MaxGrabNum'] = 'int'
+
+    def Get (self, Key):
+        return self.CFG[Key]
+
+    def LoadCfg (self):
+        CfgPath = Config.BaseDir + "/Config/" + self.CfgFile
+        print (CfgPath)
+        with open (CfgPath, "r") as CF:
+            AllLines = CF.readlines ()
+            for Line in AllLines:
+                Line = Line.replace ('\n', '')
+                if Line.find (':') == -1:
+                    continue      
+                
+                Key, Content = Line.split (':')
+
+                Type = self.CFG.get (Key)
+                if Type == 'int':
+                    self.CFG[Key] = int (Content)               
+                elif Type == 'str':
+                    self.CFG[Key] = Content
+                elif Type == 'list':
+                    self.CFG[Key] = list (Content.split (' '))
+                else:
+                    continue
+                print ('Key %s   ----->  Content %s' %(Key, str(self.CFG[Key])))
 
     @staticmethod
     def IssueFile (id):

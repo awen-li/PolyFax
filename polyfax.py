@@ -1,9 +1,13 @@
 
 import os
 import sys, getopt
+from lib.Config import Config
 from lib.LangCrawler import LangCrawler
 from lib.DomainCrawler import DomainCrawler
 from lib.InstanceDist import CmmtCrawlerDist, CmmtLogAnalyzerDist, LangApiAnalyzerDist
+
+CFG = Config ()
+CFG.LoadCfg ()
 
 
 def Daemonize():
@@ -42,10 +46,11 @@ def Help ():
 
 def GetCrawler (Type):
     Cl = None
+    
     if (Type == "lang"):
-        Cl = LangCrawler(UserName="xxx", Token="xxx", LangList=[], MaxGrabNum=10)
+        Cl = LangCrawler(UserName=CFG.Get('UserName'), Token=CFG.Get('Token'), LangList=CFG.Get('Languages'), MaxGrabNum=CFG.Get('MaxGrabNum'))
     elif (Type  == "domain"):
-        Cl = DomainCrawler(UserName="Daybreak2019", Token="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", Domains=['web', 'hardware'], MaxGrabNum=10)
+        Cl = DomainCrawler(UserName=CFG.Get('UserName'), Token=CFG.Get('Token'), Domains=CFG.Get('Domains'), MaxGrabNum=CFG.Get('MaxGrabNum'))
     else:
         Help ()
         exit (0)
