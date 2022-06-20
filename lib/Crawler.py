@@ -78,7 +78,7 @@ class Crawler():
                     writer.writerow(Header)
                     WriteHeader = True
                 
-                row = [Repo.Id, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
+                row = [Repo.Id, Repo.Name, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
                 writer.writerow(row)
         return
 
@@ -92,7 +92,7 @@ class Crawler():
             if WriteHeader == False:
                 Header = Repo.__dict__.keys ()
                 writer.writerow(Header)
-            Row = [Repo.Id, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
+            Row = [Repo.Id, Repo.Name, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
             writer.writerow(Row)
         return
 
@@ -126,8 +126,7 @@ class Crawler():
                 continue
             ValidLangs [lang] = ptop
 
-        #multi-languages
-        if len (ValidLangs) < 2:
+        if len (ValidLangs) == 0:
             return None
 
         return ValidLangs
@@ -167,6 +166,7 @@ class Crawler():
                     RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['topics'], 
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
                     RepoData.SetMainLang(MainLang)
+                    RepoData.SetName(Repo['name'])
                     
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)

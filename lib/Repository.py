@@ -3,6 +3,7 @@ class Repository ():
     def __init__(self, Id, Star,     Langs, ApiUrl, CloneUrl, Topics, Descripe, Created, Pushed):
         Langs = eval (str(Langs))
         self.Id       = Id
+        self.Name     = ''
         self.Star     = Star
         self.MainLang = ''
         self.Langs    = [lang.lower () for lang in Langs]
@@ -15,4 +16,7 @@ class Repository ():
         
     def SetMainLang (self, MainLang):
         self.MainLang = MainLang.lower ()
+
+    def SetName (self, Name):
+        self.Name = Name
     

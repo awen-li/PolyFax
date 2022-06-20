@@ -67,6 +67,7 @@ class LangCrawler(Crawler):
                     RepoData = Repository (Repo['id'], Repo['stargazers_count'], Langs, Repo['url'], Repo['clone_url'], Repo['topics'], 
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
                     RepoData.SetMainLang(MainLang)
+                    RepoData.SetName(Repo['name'])
                     
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)

@@ -26,13 +26,19 @@ class TaskDistributer():
         Tasks   = []
         StartNo = 0
         Delta   = int (self.ItemSize/self.TaskNum)
+        Mod     = self.ItemSize%self.TaskNum
         if Delta == 0:
             self.TaskNum = 1
             Delta = self.ItemSize
         
         while TaskNo < self.TaskNum:
-            print ("[Distributer] -> [%u, %u]" %(StartNo, StartNo+Delta-1))
-            CurObject = self.InitObject (StartNo, StartNo+Delta-1)
+            
+            EndNo = StartNo+Delta-1
+            if TaskNo == self.TaskNum-1:
+                EndNo += Mod
+
+            print ("[Task%d][Distributer] -> [%u, %u]" %(TaskNo, StartNo, EndNo))
+            CurObject = self.InitObject (StartNo, EndNo)
             SubTask = Task (TaskNo, self.TaskName, CurObject)
             TaskNo += 1
             

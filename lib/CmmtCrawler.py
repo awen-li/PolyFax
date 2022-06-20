@@ -57,11 +57,12 @@ class Commit ():
         
 
 class CmmtCrawler(Crawler):
-    def __init__(self, LangList=[], startNo=0, endNo=65535, RepoList={}, LangCheck=True):
+    def __init__(self, LangList=[], startNo=0, endNo=65535, RepoList={}, LangCheck=False, MinCmmtNum=1):
         super(CmmtCrawler, self).__init__(LangList=LangList)
         
         self.RepoList  = RepoList
         self.LangCheck = LangCheck
+        self.MinCmmtNum = MinCmmtNum
 
         self.Commits  = []
         self.Exts = ['.h', '.c', '.cpp', '.cc', '.i', '.js', '.css', '.json', '.sh', '.jsx', '.xml', '.yml',
@@ -90,6 +91,9 @@ class CmmtCrawler(Crawler):
         CsvFile.close()
 
     def PassLangs (self, LangFile="lang.ll"):
+        if not os.path.exists (LangFile):
+            return []
+        
         with open(LangFile, 'r', encoding='latin1') as Lfile:
             Langs = []
             for line in Lfile:
@@ -109,7 +113,7 @@ class CmmtCrawler(Crawler):
         if self.LangCheck == False:
             return True
         
-        print ("New langs -> ", Langs)
+        #print ("New langs -> ", Langs)
         CmmDate = None
         Cmmt = None
         for cmmt in self.Commits:
@@ -125,8 +129,11 @@ class CmmtCrawler(Crawler):
         os.system (LangCmd)
 
         HistLangs = self.PassLangs ()
+        if len (HistLangs) == 0:
+            return True
+        
         if len (HistLangs) < len (Langs):
-            print ("Hist langs -> ", HistLangs)
+            #print ("Hist langs -> ", HistLangs)
             return False
         else:
             return True
@@ -270,8 +277,8 @@ class CmmtCrawler(Crawler):
                     #print ("Get msg -> ", Message)
             return IssueNum
     
-    def CloneLog (self, RepoId, RepoDir, Langs):
-        Repo = RepoDir + "/" + os.listdir(RepoDir)[0]     
+    def CloneLog (self, RepoId, RepoDir, RepoName, Langs):
+        Repo = RepoDir + "/" + RepoName     
         os.chdir(Repo)
         print ("@@@ Repo -> ", Repo)
 
@@ -282,8 +289,8 @@ class CmmtCrawler(Crawler):
         print (LogCmd)
         print ("ParseLog....")
         IssueNum = self.ParseLogSmp (LogFile)
-        IssueRate = int (IssueNum*100/len (self.Commits))
-        if self.CheckLangs (Langs) == True and IssueRate >= 1  and len (self.Commits) >= 1000:
+        #IssueRate = int (IssueNum*100/len (self.Commits))
+        if self.CheckLangs (Langs) == True and len (self.Commits) >= self.MinCmmtNum:
             print ("@@@@@@ CmmtsNum = %d, IssueNum = %d" %(len(self.Commits), IssueNum))
             self.WriteCommts (RepoId)
             #os.remove (LogFile)
@@ -308,7 +315,6 @@ class CmmtCrawler(Crawler):
         if not os.path.exists (BaseDir):
             os.mkdir (BaseDir)
         
-        print (BaseDir)
         Id = 0
         for rId, repo in self.RepoList.items ():
             if Id < self.startNo or Id > self.endNo:
@@ -329,12 +335,12 @@ class CmmtCrawler(Crawler):
             os.chdir(RepoDir)
 
             CloneCmd = "git clone " + repo.CloneUrl
-            print ("[", Id, "] --> ", CloneCmd)
+            print ("[%d] --> %s" %(Id, CloneCmd))
             os.system (CloneCmd)
             Id += 1
 
             Langs = repo.Langs
-            if self.CloneLog (repo.Id, RepoDir, Langs) == True:
+            if self.CloneLog (repo.Id, RepoDir, repo.Name, Langs) == True:
                 self.Clean (RepoDir)
             Config.SetTag (str(repo.Id))
 

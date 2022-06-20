@@ -58,9 +58,9 @@ def GetCrawler (Type):
    
 def main(argv):
     IsDaemon = False
-    Type = 'lang'
-    Act  = 'crawler'
-    TaskNum = 4
+    Type     = 'lang'
+    Act      = 'crawler'
+    TaskNum  = CFG.Get('TaskNum')
     
     RepoDir  = ""
 

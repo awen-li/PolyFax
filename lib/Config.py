@@ -78,7 +78,7 @@ class Config ():
                     self.CFG[Key] = [item for item in CList if item != '']
                 else:
                     continue
-                print ('Key %s   ----->  Content %s' %(Key, str(self.CFG[Key])))
+                #print ('Key %s   ----->  Content %s' %(Key, str(self.CFG[Key])))
 
     @staticmethod
     def IssueFile (id):
