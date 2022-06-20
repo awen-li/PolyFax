@@ -7,21 +7,26 @@ import pandas as pd
 from time import sleep
 from lib.Repository import Repository
 from lib.Config import Config
-    
+
+CFG = Config ()
+CFG.LoadCfg ()
+
 class Crawler():
-    def __init__(self, FileName="RepositoryList.csv", UserName="", Token="", LangList=[], MaxGrabNum=-1):
+    def __init__(self, FileName="RepositoryList.csv"):
         self.FileName = Config.BaseDir + '/' + FileName
-        self.Username = UserName
-        self.Password = Token
-        self.LangList = LangList
-        
         self.RepoList = {}
 
         self.MaxStar = 15000
-        self.MinStar = 1000
         self.Delta   = 100
 
-        self.MaxGrabNum = MaxGrabNum
+        self.MaxGrabNum = CFG.Get ('MaxGrabNum')
+        self.MinStar    = CFG.Get ('MinStar')
+        self.LangList   = CFG.Get ('Languages')
+        self.Domains    = CFG.Get ('Domains')
+        self.Username   = CFG.Get ('UserName')
+        self.Password   = CFG.Get ('Token')
+        self.MinLangs   = CFG.Get ('MinLangs')
+        self.MaxLangs   = CFG.Get ('MaxLangs')
 
     
     def IsContinue (self, errcode):
@@ -109,7 +114,7 @@ class Crawler():
         if len (self.LangList) == 0:
             return LangsDict
 
-        Langs = list(LangsDict.keys ())[0:6]
+        Langs = list(LangsDict.keys ())[0:self.MaxLangs]
 
         # compute all language size
         Size = 0
@@ -158,7 +163,7 @@ class Crawler():
                     LangsDict = self.GetRepoLangs (Repo['languages_url'])
                     MainLang  = self.GetMainLang (LangsDict)
                     
-                    Langs = list(LangsDict.keys ())[0:6]
+                    Langs = list(LangsDict.keys ())[0:self.MaxLangs]
                     if len (Langs) == 0:
                         continue
 

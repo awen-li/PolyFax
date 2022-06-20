@@ -4,22 +4,11 @@ from lib.Crawler import Crawler
 from lib.Repository import Repository
     
 class LangCrawler(Crawler):
-    def __init__(self, FileName="RepositoryList.csv", UserName="", Token="", LangList=[], MaxGrabNum=-1):
-        super(LangCrawler, self).__init__(FileName, UserName, Token, LangList, MaxGrabNum)
-
-        self.LangList = LangList     
-        self.MinLang  = 2
-        self.MaxLang  = 6
-        self.LangSelectList = []
+    def __init__(self, FileName="RepositoryList.csv"):
+        super(LangCrawler, self).__init__(FileName)
 
         if os.path.exists (self.FileName):
             os.rename (self.FileName, self.FileName+"-back.csv")
-        
-    def GetLangSelections ():
-        for i in range(self.MinLang, self.MaxLang+1, 1):
-            LangSelect = [list(x) for x in combinations(self.LangList, i)]
-            if len(LangSelect) > 0:
-                self.LangSelectList.extend(LangSelect)
 
     def GrabProject (self):
         PageNum = 10  

@@ -48,9 +48,9 @@ def GetCrawler (Type):
     Cl = None
     
     if (Type == "lang"):
-        Cl = LangCrawler(UserName=CFG.Get('UserName'), Token=CFG.Get('Token'), LangList=CFG.Get('Languages'), MaxGrabNum=CFG.Get('MaxGrabNum'))
+        Cl = LangCrawler()
     elif (Type  == "domain"):
-        Cl = DomainCrawler(UserName=CFG.Get('UserName'), Token=CFG.Get('Token'), Domains=CFG.Get('Domains'), MaxGrabNum=CFG.Get('MaxGrabNum'))
+        Cl = DomainCrawler()
     else:
         Help ()
         exit (0)

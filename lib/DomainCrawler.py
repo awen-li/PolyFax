@@ -4,9 +4,8 @@ from lib.Crawler import Crawler
 from lib.Repository import Repository
     
 class DomainCrawler(Crawler):
-    def __init__(self, FileName="RepositoryList.csv", UserName="", Token="", LangList=[], Domains=[], MaxGrabNum=-1):
-        super(DomainCrawler, self).__init__(FileName, UserName, Token, LangList, MaxGrabNum)
-        self.Domains  = Domains
+    def __init__(self, FileName="RepositoryList.csv"):
+        super(DomainCrawler, self).__init__(FileName)
 
         if os.path.exists (self.FileName):
             os.rename (self.FileName, self.FileName+"-back.csv")

@@ -4,12 +4,6 @@ import os
 
 class Config ():
 
-    START_YEAR   = 2013
-    END_YEAR     = 2022
-    PAGE_COUNT   = 10
-    PER_PAGE     = 100
-
-
     OriginCollect= "OriginData"
     OriginStat   = "StatData"
     Evoluation   = "Evoluation"
@@ -29,8 +23,6 @@ class Config ():
         os.makedirs (CMMT_STAT_DIR)
 
     KEYWORD_FILE = BaseDir + "/Config/keywords.txt"
-
-    MAX_CMMT_NUM = 20 * 1024
 
     TagSet       = BaseDir + "/TagSet"
     if not os.path.exists (TagSet):
@@ -52,6 +44,12 @@ class Config ():
         self.CFG['Languages']  = 'list'
         self.CFG['Domains']    = 'list'
         self.CFG['MaxGrabNum'] = 'int'
+        self.CFG['LangConsistCheck'] = 'int'
+        self.CFG['MinStar'] = 'int'
+        self.CFG['MaxCmmtNum'] = 'int'
+        self.CFG['MinCmmtNum'] = 'int'
+        self.CFG['MinLangs'] = 'int'
+        self.CFG['MaxLangs'] = 'int'
 
     def Get (self, Key):
         return self.CFG[Key]
@@ -63,7 +61,7 @@ class Config ():
             AllLines = CF.readlines ()
             for Line in AllLines:
                 Line = Line.replace ('\n', '')
-                if Line.find (':') == -1:
+                if Line.find (':') == -1 or Line.find ('#') != -1:
                     continue      
                 
                 Key, Content = Line.split (':')

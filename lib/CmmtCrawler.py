@@ -9,6 +9,9 @@ from lib.Util import Util
 from lib.Crawler import Crawler
 from lib.Scrubber import Scrubber
 
+CFG = Config ()
+CFG.LoadCfg ()
+
 
 def IsNumber(s):
     try:
@@ -57,12 +60,13 @@ class Commit ():
         
 
 class CmmtCrawler(Crawler):
-    def __init__(self, LangList=[], startNo=0, endNo=65535, RepoList={}, LangCheck=False, MinCmmtNum=1):
-        super(CmmtCrawler, self).__init__(LangList=LangList)
+    def __init__(self, LangList=[], startNo=0, endNo=65535, RepoList={}):
+        super(CmmtCrawler, self).__init__()
         
-        self.RepoList  = RepoList
-        self.LangCheck = LangCheck
-        self.MinCmmtNum = MinCmmtNum
+        self.RepoList   = RepoList
+        self.LangCheck  = CFG.Get ('LangConsistCheck')
+        self.MinCmmtNum = CFG.Get ('MinCmmtNum')
+        self.MaxCmmtNum = CFG.Get ('MaxCmmtNum')
 
         self.Commits  = []
         self.Exts = ['.h', '.c', '.cpp', '.cc', '.i', '.js', '.css', '.json', '.sh', '.jsx', '.xml', '.yml',
@@ -110,7 +114,7 @@ class CmmtCrawler(Crawler):
             return Langs
         
     def CheckLangs (self, Langs, Date='2020-06-01'):
-        if self.LangCheck == False:
+        if self.LangCheck == 0:
             return True
         
         #print ("New langs -> ", Langs)
@@ -283,8 +287,8 @@ class CmmtCrawler(Crawler):
         print ("@@@ Repo -> ", Repo)
 
         LogFile = str (RepoId) + ".log"
-        #LogCmd = "git log -20000 --date=iso -p > " + LogFile # for ParseLog
-        LogCmd = "git log -20000 --date=iso > " + LogFile     # for ParseLogSmp
+        #LogCmd = "git log -" + str (self.MaxCmmtNum) + " --date=iso -p > " + LogFile # for ParseLog
+        LogCmd = "git log -" + str (self.MaxCmmtNum) + " --date=iso > " + LogFile     # for ParseLogSmp
         os.system (LogCmd)
         print (LogCmd)
         print ("ParseLog....")

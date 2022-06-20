@@ -5,6 +5,10 @@ from lib.Analyzer import Analyzer
 from lib.Config import Config
 from lib.Scrubber import Scrubber
 
+CFG = Config ()
+CFG.LoadCfg ()
+
+
 from progressbar import ProgressBar
 import pandas as pd
 from fuzzywuzzy import fuzz
@@ -53,7 +57,8 @@ class CmmtLogAnalyzer(Analyzer):
         self.keywords  = self.LoadKeywords ()
         self.CommitNum = 0
         self.RepoNum   = 0
-        self.MaxCommitNum = Config.MAX_CMMT_NUM
+        self.MaxCommitNum = CFG.Get ('MaxCmmtNum')
+        self.MinLangs = CFG.Get ('MinLangs')
         
         self.SeCategoryStats = {}
         self.InitSecategory ()
@@ -215,7 +220,7 @@ class CmmtLogAnalyzer(Analyzer):
         StartTime = time.time()
 
         LangNum = len (RepoItem.Langs)
-        if LangNum < 2 :
+        if LangNum < self.MinLangs:
             return
 
         self.RepoNum += 1
