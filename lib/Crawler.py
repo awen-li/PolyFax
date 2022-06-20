@@ -58,8 +58,11 @@ class Crawler():
     def GetRepoLangs (self, LangUrl):
         Langs = self.HttpCall(LangUrl)
         Langs = dict(sorted(Langs.items(), key=lambda item:item[1], reverse=True))
+        lowerLangs = {}
+        for lang, size in Langs.items():
+            lowerLangs [lang.lower()] = size
         #Langs = [lang.lower() for lang in Langs.keys()]
-        return Langs
+        return lowerLangs
 
     def Save (self, Header=None):
         if len (self.RepoList) == 0:
@@ -105,7 +108,7 @@ class Crawler():
     def LangValidate (self, LangsDict):
         if len (self.LangList) == 0:
             return LangsDict
-        
+
         Langs = list(LangsDict.keys ())[0:6]
 
         # compute all language size
@@ -123,6 +126,7 @@ class Crawler():
                 continue
             ValidLangs [lang] = ptop
 
+        #multi-languages
         if len (ValidLangs) < 2:
             return None
 

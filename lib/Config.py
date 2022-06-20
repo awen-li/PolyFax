@@ -74,7 +74,8 @@ class Config ():
                 elif Type == 'str':
                     self.CFG[Key] = Content
                 elif Type == 'list':
-                    self.CFG[Key] = list (Content.split (' '))
+                    CList = list (Content.split (' '))
+                    self.CFG[Key] = [item for item in CList if item != '']
                 else:
                     continue
                 print ('Key %s   ----->  Content %s' %(Key, str(self.CFG[Key])))
