@@ -86,17 +86,17 @@ class CmmtLogAnalyzer(Analyzer):
 
         if self.RegexMode == True:
             self.RegexCompile ()         
-            self.RegexMatchTest ()
+            #self.RegexMatchTest ()
         else:
             self.threshhold = 90
-            self.FuzzTest ()
+            #self.FuzzTest ()
 
-        TotalPhrase = 0
-        for Id, Sec in self.SeCategoryStats.items():
-            keywords = Sec.keywords
-            print ("===> %s ---- key phrase number ---->%d" %(Sec.category, len(keywords)))
-            TotalPhrase += len(keywords)
-        print ("===> Whole ---- key phrase number ---->%d" %(TotalPhrase))
+        #TotalPhrase = 0
+        #for Id, Sec in self.SeCategoryStats.items():
+        #    keywords = Sec.keywords
+        #    print ("===> %s ---- key phrase number ---->%d" %(Sec.category, len(keywords)))
+        #    TotalPhrase += len(keywords)
+        #print ("===> Whole ---- key phrase number ---->%d" %(TotalPhrase))
 
     def RegexCompile (self):
         for Id, Sec in self.SeCategoryStats.items():
@@ -131,7 +131,6 @@ class CmmtLogAnalyzer(Analyzer):
         return None, None 
 
     def FuzzTest (self):
-        print (self.SeCategoryStats)
         message = ['sqli',  'injection', 'commands', 'injection']
         Clf, Matched = self.FuzzMatch (message, self.threshhold)
         if Clf == "Insecure_interaction_between_components":

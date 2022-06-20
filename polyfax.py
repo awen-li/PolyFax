@@ -38,8 +38,8 @@ def Help ():
     print ("====================================================")
     print ("= python mls.py -a crawler -t <lang/domain> -n <task num>")
     print ("= python mls.py -a crawler-cmmt -n <task num>")
-    print ("= python mls.py -a api -n <task num>")
-    print ("= python mls.py -a cmmt -n <task num>")
+    print ("= python mls.py -a lic -n <task num>")
+    print ("= python mls.py -a vcc -n <task num>")
     print ("= python mls.py -a all -n <task num>")
     print ("====================================================\r\n")
 
@@ -110,10 +110,10 @@ def main(argv):
     elif Act == 'crawler-cmmt':
         CCTDist = CmmtCrawlerDist (TaskNum=TaskNum)
         CCTDist.Distributer ()
-    elif Act == 'api':
+    elif Act == 'lic':
         LAADist = LangApiAnalyzerDist (TaskNum=TaskNum)
         LAADist.Distributer ()
-    elif Act == 'cmmt': 
+    elif Act == 'vcc': 
         CLADist = CmmtLogAnalyzerDist (TaskNum=TaskNum)
         CLADist.Distributer ()
     else:

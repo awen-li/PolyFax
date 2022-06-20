@@ -122,7 +122,7 @@ class LangApiAnalyzer (Analyzer):
         self.InitHIClass ()
 
         # Test
-        self.TestClf ()
+        #self.TestClf ()
 
         # Default file
         Header = ['id', 'languages', 'classifier', 'clfType', 'fileType']
