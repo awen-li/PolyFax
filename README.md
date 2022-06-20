@@ -22,7 +22,7 @@ Here we present the procedure to setup PolyFax through source code in three step
 Following sections demonstrate how to use PolyFax with its three primary functionalities: grabbing repositories from GitHub and running the two analyzers of vulnerability-fixing commit and language interaction categorization.
 
 ### Default parameters
-PolyFax has a default configure file under ***PolyFax/Data/Config/config.ini*** with the content as below:
+PolyFax has a default configure file under [config.ini](https://github.com/Daybreak2019/PolyFax/blob/main/Data/Config/config.ini) with the content as below:
 1. UserName: the username of GitHub account 
 2. Token: the access token of GitHub account
 3. TaskNum: the number of process for PolyFax 
