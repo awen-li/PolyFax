@@ -43,9 +43,9 @@ def Help ():
 def GetCrawler (Type):
     Cl = None
     if (Type == "lang"):
-        Cl = LangCrawler(UserName="xxx", Token="xxx", LangList=[])
+        Cl = LangCrawler(UserName="xxx", Token="xxx", LangList=[], MaxGrabNum=10)
     elif (Type  == "domain"):
-        Cl = DomainCrawler(UserName="xxx", Token="xxx", Domains=['web', 'hardware'])
+        Cl = DomainCrawler(UserName="Daybreak2019", Token="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", Domains=['web', 'hardware'], MaxGrabNum=10)
     else:
         Help ()
         exit (0)
