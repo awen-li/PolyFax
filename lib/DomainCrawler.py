@@ -53,6 +53,7 @@ class DomainCrawler(Crawler):
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
                     RepoData.SetMainLang(MainLang)
                     RepoData.SetName(Repo['name'])
+                    RepoData.SetLangDict (LangsDict)
 
                     Exist = self.RepoList.get (Repo['id'])
                     if Exist != None:

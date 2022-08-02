@@ -7,6 +7,10 @@ class Repository ():
         self.Star     = Star
         self.MainLang = ''
         self.Langs    = [lang.lower () for lang in Langs]
+        self.LangNum  = len (Langs)
+        self.LangsDict= {}
+        self.LangsDist= {}
+        self.LangCombo= []
         self.ApiUrl   = ApiUrl
         self.CloneUrl = CloneUrl
         self.Topics   = Topics
@@ -19,4 +23,7 @@ class Repository ():
 
     def SetName (self, Name):
         self.Name = Name
+
+    def SetLangDict (self, LangDict):
+        self.LangsDict = LangDict
     

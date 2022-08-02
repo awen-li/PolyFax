@@ -34,6 +34,8 @@ class Config ():
 
     CFG_Type = ['int', 'str', 'list']
 
+    MAX_CMMT_NUM = 20 * 1024
+
     def __init__(self, CfgFile='config.ini'):
         self.CfgFile = CfgFile
 

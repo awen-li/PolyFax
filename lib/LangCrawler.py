@@ -57,6 +57,7 @@ class LangCrawler(Crawler):
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
                     RepoData.SetMainLang(MainLang)
                     RepoData.SetName(Repo['name'])
+                    RepoData.SetLangDict (LangsDict)
                     
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)

@@ -5,31 +5,16 @@ from lib.Config import Config
 from lib.LangCrawler import LangCrawler
 from lib.DomainCrawler import DomainCrawler
 from lib.InstanceDist import CmmtCrawlerDist, CmmtLogAnalyzerDist, LangApiAnalyzerDist
+from lib.RepoAnalyzer import RepoAnalyzer
+from lib.NbrAnalyzer import NbrAnalyzer
+from lib.NbrAnalyzerLic import NbrAnalyzerLic
+from lib.NbrAnalyzerSL import NbrAnalyzerSL
+
 
 CFG = Config ()
 CFG.LoadCfg ()
 
-
-def Daemonize():
-    pid = os.fork()
-    if pid:
-        sys.exit(0)
- 
-    #os.chdir('/')
-    os.umask(0)
-    os.setsid()
-
-    _pid = os.fork()
-    if _pid:
-        sys.exit(0)
- 
-    sys.stdout.flush()
-    sys.stderr.flush()
- 
-    #with open('/dev/null') as read_null, open('/dev/null', 'w') as write_null:
-    #    os.dup2(read_null.fileno(), sys.stdin.fileno())
-    #    os.dup2(write_null.fileno(), sys.stdout.fileno())
-    #    os.dup2(write_null.fileno(), sys.stderr.fileno())
+#LangCrawler().Transer ()
 
 
 def Help ():
@@ -65,7 +50,7 @@ def main(argv):
     RepoDir  = ""
 
     try:
-        opts, args = getopt.getopt(argv,"hdt:a:n:",["Type="])
+        opts, args = getopt.getopt(argv,"ht:a:n:",["Type="])
     except getopt.GetoptError:
         Help ()
         sys.exit(2)
@@ -74,17 +59,12 @@ def main(argv):
             Type = arg;
         if opt in ("-a", "--action"):
             Act = arg;
-        elif opt in ("-d", "--daemon"):
-            IsDaemon = True;
         elif opt in ("-n", "--task number"):
             TaskNum = int (arg);
         elif opt in ("-h", "--help"):
             Help ()
             sys.exit(2)
 
-    if IsDaemon == True:
-        Daemonize ()
-            
     if Act == 'all': 
         # 1.  grab the project 
         Cl = GetCrawler (Type)
@@ -101,6 +81,18 @@ def main(argv):
         # 4. analyze the APIs
         LAADist = LangApiAnalyzerDist (TaskNum=TaskNum, RepoList=Cl.RepoList)
         LAADist.Distributer ()
+
+        # 5. analyze repos
+        Ra = RepoAnalyzer ()
+        Ra.StartRun ()
+
+        # 6. nbr analysise
+        Nbra = NbrAnalyzer ()
+        Nbra.StartRun ()
+
+        NbraLic = NbrAnalyzerLic ()
+        NbraLic.StartRun ()
+        
     elif Act == 'crawler':
         Cl = GetCrawler (Type)
         Cl.Grab ()
@@ -116,6 +108,15 @@ def main(argv):
     elif Act == 'vcc': 
         CLADist = CmmtLogAnalyzerDist (TaskNum=TaskNum)
         CLADist.Distributer ()
+    elif Act == 'nbr-combo':
+        Nbra = NbrAnalyzer ()
+        Nbra.StartRun ()
+    elif Act == 'nbr-lic':
+        NbraLic = NbrAnalyzerLic ()
+        NbraLic.StartRun ()
+    elif Act == 'nbr-single':
+        NbraSL = NbrAnalyzerSL ()
+        NbraSL.StartRun ()
     else:
         Help()
 

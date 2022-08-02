@@ -83,7 +83,8 @@ class Crawler():
                     writer.writerow(Header)
                     WriteHeader = True
                 
-                row = [Repo.Id, Repo.Name, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
+                row = Repo.__dict__.values ()
+                #[Repo.Id, Repo.Name, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
                 writer.writerow(row)
         return
 
@@ -97,9 +98,30 @@ class Crawler():
             if WriteHeader == False:
                 Header = Repo.__dict__.keys ()
                 writer.writerow(Header)
-            Row = [Repo.Id, Repo.Name, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
+            Row = Repo.__dict__.values ()
+            #[Repo.Id, Repo.Name, Repo.Star, Repo.MainLang, Repo.Langs, Repo.ApiUrl, Repo.CloneUrl, Repo.Topics, Repo.Descripe, Repo.Created, Repo.Pushed]
             writer.writerow(Row)
         return
+
+    def Transer (self):
+        import ntpath
+
+        Input = 'Data/OriginData/Repository_List.csv'
+        df = pd.read_csv(Input)
+        for index, row in df.iterrows():
+            LangDict = eval (row['language_dictionary'])
+            LangDict = dict(sorted(LangDict.items(), key=lambda item:item[1], reverse=True))
+            MainLang = self.GetMainLang (LangDict)
+            Langs    = list(LangDict.keys ())[0:self.MaxLangs]
+            RepoData = Repository (row['id'], row['stargazers_count'], Langs, row['url'], row['clone_url'], row['topics'], 
+                                   row['description'], row['created_at'], row['pushed_at'])
+            RepoData.SetLangDict(LangDict)
+            RepoData.SetMainLang(MainLang)
+    
+            Name = ntpath.basename(row['url'])
+            RepoData.SetName(Name)
+            
+            self.AppendSave (RepoData)
 
     def GetMainLang (self, LangsDict):
         MaxSize  = 0
@@ -127,7 +149,7 @@ class Crawler():
             if lang not in self.LangList:
                 continue
             ptop = LangsDict[lang]*100.0/Size
-            if ptop < 5:
+            if ptop < 1:
                 continue
             ValidLangs [lang] = ptop
 
@@ -172,6 +194,7 @@ class Crawler():
                                            Repo['description'], Repo['created_at'], Repo['pushed_at'])
                     RepoData.SetMainLang(MainLang)
                     RepoData.SetName(Repo['name'])
+                    RepoData.SetLangDict (LangsDict)
                     
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)
