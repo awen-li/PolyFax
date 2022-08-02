@@ -20,8 +20,10 @@ class RepoStats():
         
         total_bytes_written = sum(list(repo.LangsDict.values()))
         language_distribution = self.repo.LangsDict.copy()
+        LangsDist = {}
         for key in language_distribution.keys():
-            self.repo.LangsDist[key] = language_distribution[key]/total_bytes_written
+            LangsDist[key] = language_distribution[key]/total_bytes_written
+        self.repo.LangsDist = LangsDist 
 
         self.all_languages = repo.Langs
         self.all_languages.sort()

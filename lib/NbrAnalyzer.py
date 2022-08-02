@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import time
 import re
 import pandas as pd
-
+import os
 
 class SeCategory ():
     def __init__ (self, category, keywords):
@@ -65,8 +65,10 @@ class NbrAnalyzer(Analyzer):
     prenbr_stats   = stat_dir + "PreNbr_Stats.csv"
     topcombo_stats = stat_dir + "LangCombo_Stats.csv"
 
-    def __init__(self, StartNo=0, EndNo=65535, InputFile='RepositoryList.csv', OutputFile='PreNbr_Stats'):
+    def __init__(self, StartNo=0, EndNo=65535, InputFile='Repository_Stats.csv', OutputFile='PreNbr_Stats.csv'):
         super(NbrAnalyzer, self).__init__(StartNo, EndNo, InputFile, OutputFile)
+        self.FilePath = Config.BaseDir + '/' + Config.StatisticDir
+        self.LoadRepoList ()
         
         self.RepoNum = 0  
         self.max_cmmt_num = Config.MAX_CMMT_NUM
@@ -95,9 +97,12 @@ class NbrAnalyzer(Analyzer):
         repo_id = NbrStats.repo_id
 
         cmmt_file = Config.CmmtFile (repo_id)
-        if (Config.is_exist(cmmt_file) == False):
+        print (cmmt_file)
+        if (Config.IsExist(cmmt_file) == False):
+            print (cmmt_file + " is not exist................................")
             return
 
+        print (cmmt_file + " is exist......")
         #developers & commit_num
         cdf = pd.read_csv(cmmt_file)
         
@@ -127,7 +132,7 @@ class NbrAnalyzer(Analyzer):
             
         #security bug num
         cmmt_stat_file = Config.CmmtStatFile (repo_id) + ".csv"
-        if Config.is_exist(cmmt_stat_file) == False:
+        if Config.IsExist(cmmt_stat_file) == False:
             NbrStats.update (age, commits_num, developer_num, 0)
             NbrStats.update_secategory (0, 0, 0, 0)      
             self.pre_nbr_stats[repo_id] = NbrStats
@@ -170,20 +175,20 @@ class NbrAnalyzer(Analyzer):
         start_time = time.time()
         if (self.is_prenbr_ready ()):
             return
-        
-        self.RepoNum += 1      
-        if ((repo_item.languages_used < 2) or (len(repo_item.language_combinations) == 0)):
+
+        self.RepoNum += 1
+        LangCombo = eval (repo_item.LangCombo)
+        if ((repo_item.LangNum < 2) or (len(LangCombo) == 0)):
             return
        
-        repo_id = repo_item.id
-
-        combo = "".join (repo_item.language_combinations)
+        repo_id = repo_item.Id
+        combo = LangCombo[0]
         combo = combo.replace ("c++", "cpp")
         combo = combo.replace ("objective-c", "objectivec")
         combo = combo.replace (" ", "_")
 
         #basic
-        NbrStats = PreNbrData (repo_id, combo, repo_item.size, repo_item.languages_used, 0, 0, 0, 0, 0, 0, 0, 0)     
+        NbrStats = PreNbrData (repo_id, combo, repo_item.Size, repo_item.LangNum, 0, 0, 0, 0, 0, 0, 0, 0)     
         
         #commits
         self.get_cmmtinfo (NbrStats)
@@ -216,10 +221,19 @@ class NbrAnalyzer(Analyzer):
                 break
         return
 
+    def InterSection (self, combo1, combo2):
+        LC1 = combo1.split ('_')
+        LC2 = combo2.split ('_')
+        INs = list (set(LC1).intersection (set (LC2)))
+        if len (INs) == len (LC1) or len (INs) == len (LC2):
+            return True
+        else:
+            return False
+
     def get_nbrdata (self, combo):
         for repo_id, predata in self.pre_nbr_stats.items():
             combo_num = 0
-            if ((combo in predata.combo) or (predata.combo in combo)):
+            if self.InterSection (combo, predata.combo) == True:
                 combo_num = 1
             nbrdata = NbrData (predata.repo_id, predata.combo, combo_num, predata.pj_size, predata.lg_num, 
                                predata.age, predata.cmmt_num, predata.dev_num, predata.se_num,
@@ -243,25 +257,33 @@ class NbrAnalyzer(Analyzer):
         if (len(self.pre_nbr_stats) == 0):
             self.load_prenbr ()
         else:
-            super(NbrAnalyzer, self).save_data2(self.pre_nbr_stats, None)
+            key0 = list(self.pre_nbr_stats.keys())[0]
+            super(NbrAnalyzer, self).SaveData2("/PreNbr_Stats.csv", self.pre_nbr_stats[key0].__dict__, self.pre_nbr_stats)
 
         self.load_top_combo ()
 
         for combo in self.topcombo:
-            #print ("NMR --- %s " %combo)
-            #print ("%s + " %combo, end="")
             self.get_nbrdata (combo)
-            self.SaveData(combo)
+            self.SaveData("/" + combo + ".csv")
 
         index = 0
+        hasFrame = False
         for combo in self.topcombo:
-            df = pd.read_csv(NbrAnalyzer.stat_dir + combo+".csv", header=0, 
-                             infer_datetime_format=True, parse_dates=[0], index_col=[0])
+            CF = NbrAnalyzer.stat_dir + combo+".csv"
+            if not os.path.exists (CF):
+                continue
+            
+            df = pd.read_csv(CF, header=0, infer_datetime_format=True, parse_dates=[0], index_col=[0])
             if not index:
                 cdf = df
             
             cdf[combo] = df['combo_num']
             index += 1
+            hasFrame = True
+
+        if hasFrame == False:
+            print ("@@@@ No enough data for NBR analysis....\r\n")
+            return
         
         #Setup the regression expression in patsy notation. 
         #We are telling patsy that se_num is our dependent variable 
@@ -288,7 +310,7 @@ class NbrAnalyzer(Analyzer):
             return
 
         key0 = list(self.AnalyzStats.keys())[0]
-        super(NbrAnalyzer, self).SaveData2 ("/StatData/" + FileName, self.AnalyzStats[key0].__dict__, self.AnalyzStats)
+        super(NbrAnalyzer, self).SaveData2 (FileName, self.AnalyzStats[key0].__dict__, self.AnalyzStats)
         self.AnalyzStats = {}
 
     def Obj2List(self, value):

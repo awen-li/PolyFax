@@ -47,7 +47,7 @@ class LangApiAnalyzerDist (TaskDistributer):
         super(LangApiAnalyzerDist, self).__init__(TaskName='LangApiAnalyzer', ItemSize=len(RepoList), TaskNum=TaskNum)
                 
     def InitObject(self, StartNo, EndNo):
-        CCAnalyzer = LangApiAnalyzer (StartNo=StartNo, EndNo=EndNo, FileName='ApiSniffer'+str(StartNo))
+        CCAnalyzer = LangApiAnalyzer (StartNo=StartNo, EndNo=EndNo, OutputFile='ApiSniffer'+str(StartNo))
         return CCAnalyzer
     
     def Final(self):

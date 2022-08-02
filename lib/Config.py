@@ -90,7 +90,7 @@ class Config ():
 
     @staticmethod
     def CmmtStatFile (id):
-        return (Config.CMMT_STAT_DIR + str(id))
+        return (Config.CMMT_STAT_DIR + str(id) + ".csv")
 
     @staticmethod
     def IsExist (file):

@@ -195,6 +195,7 @@ class Crawler():
                     RepoData.SetMainLang(MainLang)
                     RepoData.SetName(Repo['name'])
                     RepoData.SetLangDict (LangsDict)
+                    RepoData.SetSize(Repo['size'])                 
                     
                     self.RepoList[Repo['id']] = RepoData
                     self.AppendSave (RepoData)

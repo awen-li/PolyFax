@@ -39,7 +39,7 @@ class Analyzer(metaclass=abc.ABCMeta):
         self.__WriteCsv (data, FileName)
 
     def SaveData2 (self, FileName, Header, Dict):
-        FilePath = self.FilePath + FileName + '.csv'      
+        FilePath = self.FilePath + FileName   
         with open(FilePath, 'w') as CsvFile:
             W = csv.writer(CsvFile)            
             W.writerow(Header)
@@ -60,6 +60,9 @@ class Analyzer(metaclass=abc.ABCMeta):
 
     def LoadRepoList (self):
         FilePath = self.FilePath + '/' + self.InputFile
+        if Config.IsExist (FilePath) == False:
+            return
+        
         df = pd.read_csv(FilePath)
         for index, row in df.iterrows():
             RepoData = Repository (row['Id'], row['Star'], row['Langs'], row['ApiUrl'], row['CloneUrl'], row['Topics'], 
@@ -67,6 +70,10 @@ class Analyzer(metaclass=abc.ABCMeta):
             RepoData.SetLangDict(row['LangsDict'])
             RepoData.SetName(row['Name'])
             RepoData.SetMainLang(row['MainLang'])
+            RepoData.SetSize(row['Size'])
+            RepoData.SetLangCombo(row['LangCombo'])
+            RepoData.SetLangsDist(row['LangsDist'])
+            
             self.RepoList.append (RepoData)
 
     def NbrDump (self, r_val, nbrSum):
@@ -129,6 +136,10 @@ class Analyzer(metaclass=abc.ABCMeta):
                 
     def NbrCompute (self, cdf, r_val):
         df_train = cdf
+
+        if df_train[r_val].sum () == 0:
+            print ("@@@@ No enough data for NBR analysis....\r\n")
+            return
 
         expr = self.GetNbrExpr (r_val)
               

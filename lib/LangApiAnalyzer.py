@@ -91,8 +91,8 @@ class ApiClassifier ():
         return False
 
 class LangApiAnalyzer (Analyzer):
-    def __init__(self, StartNo=0, EndNo=65535, FileName='ApiSniffer'):
-        super(LangApiAnalyzer, self).__init__(StartNo=StartNo, EndNo=EndNo, FileName=FileName)
+    def __init__(self, StartNo=0, EndNo=65535, InputFile='RepositoryList.csv', OutputFile="ApiSniffer"):
+        super(LangApiAnalyzer, self).__init__(StartNo, EndNo, InputFile, OutputFile)
 
         self.FilePath = Config.BaseDir + '/' + Config.StatisticDir + '/'
         self.Index   = 0

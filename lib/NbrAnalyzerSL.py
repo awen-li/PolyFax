@@ -1,5 +1,5 @@
 import pandas as pd
-
+from lib.Config import Config
 from lib.Analyzer import Analyzer
 from lib.NbrAnalyzer import PreNbrData
 
@@ -26,8 +26,10 @@ class NbrAnalyzerSL(Analyzer):
     stat_dir = "Data/StatData/"
     prenbr_stats   = stat_dir + "PreNbr_Stats.csv"
 
-    def __init__(self, StartNo=0, EndNo=65535, InputFile='RepositoryList.csv', OutputFile='NbrSingleLang_Stats'):
-        super(NbrAnalyzerSL, self).__init__(StartNo, EndNo, InputFile, OutputFile)    
+    def __init__(self, StartNo=0, EndNo=65535, InputFile='Repository_Stats.csv', OutputFile='NbrSingleLang_Stats'):
+        super(NbrAnalyzerSL, self).__init__(StartNo, EndNo, InputFile, OutputFile)
+        self.FilePath = Config.BaseDir + '/' + Config.StatisticDir
+        self.LoadRepoList ()
 
         self.pre_nbr_stats = {}
         self.langs = {}
@@ -73,7 +75,7 @@ class NbrAnalyzerSL(Analyzer):
         print ("@@@ ALL langs ----> " + str(self.langs.keys()))
         for lang in self.langs.keys ():
             self.get_nbrdata (lang)
-            self.SaveData("Nbr_" + lang)
+            self.SaveData("Nbr_" + lang + '.csv')
 
         index = 0
         for lang in self.langs.keys ():
@@ -106,7 +108,7 @@ class NbrAnalyzerSL(Analyzer):
             return
         
         key0 = list(self.AnalyzStats.keys())[0]
-        super(NbrAnalyzerSL, self).SaveData2 ("/StatData/" + FileName, self.AnalyzStats[key0].__dict__, self.AnalyzStats)
+        super(NbrAnalyzerSL, self).SaveData2 (FileName, self.AnalyzStats[key0].__dict__, self.AnalyzStats)
         self.AnalyzStats = {}
         
     def Obj2List(self, value):

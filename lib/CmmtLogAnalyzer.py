@@ -50,8 +50,8 @@ class CmmtLogs():
 
 class CmmtLogAnalyzer(Analyzer):
 
-    def __init__(self, StartNo=0, EndNo=65535, RegexMode=False, FileName='CmmtLogAnalyzer.csv'):
-        super(CmmtLogAnalyzer, self).__init__(StartNo=StartNo, EndNo=EndNo, FileName=FileName)
+    def __init__(self, StartNo=0, EndNo=65535, RegexMode=False, InputFile='RepositoryList.csv', OutputFile="CmmtLogAnalyzer.csv"):
+        super(CmmtLogAnalyzer, self).__init__(StartNo, EndNo, InputFile, OutputFile)
         self.RegexMode = RegexMode 
         self.Scrubber  = Scrubber ()
         self.keywords  = self.LoadKeywords ()
@@ -269,7 +269,7 @@ class CmmtLogAnalyzer(Analyzer):
 
         #save by repository
         print ("[%u]%u -> accumulated commits: %u, timecost:%u s" %(self.RepoNum, RepoId, self.CommitNum, int(time.time()-StartTime)) )
-        self.SaveData (str(RepoId))
+        self.SaveData (str(RepoId)+'.csv')
         self.AnalyzStats = {}
 
     def ClassifySeC (self, Msg):
@@ -305,7 +305,7 @@ class CmmtLogAnalyzer(Analyzer):
                     for Id, Sec in self.SeCategoryStats.items():
                         if Sec.category == Clf:
                             Sec.count += 1                 
-        super(CmmtLogAnalyzer, self).SaveData2 ("/StatData/SeCategory_Stats", self.SeCategoryStats[0].__dict__, self.SeCategoryStats)
+        super(CmmtLogAnalyzer, self).SaveData2 ("/StatData/SeCategory_Stats.csv", self.SeCategoryStats[0].__dict__, self.SeCategoryStats)
         
 
     def LoadKeywords(self):

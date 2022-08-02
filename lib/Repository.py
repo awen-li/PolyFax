@@ -11,6 +11,7 @@ class Repository ():
         self.LangsDict= {}
         self.LangsDist= {}
         self.LangCombo= []
+        self.Size     = 0
         self.ApiUrl   = ApiUrl
         self.CloneUrl = CloneUrl
         self.Topics   = Topics
@@ -26,4 +27,13 @@ class Repository ():
 
     def SetLangDict (self, LangDict):
         self.LangsDict = LangDict
+
+    def SetSize (self, Size):
+        self.Size = Size
+
+    def SetLangsDist (self, LangsDist):
+        self.LangsDist = LangsDist
+
+    def SetLangCombo (self, LangCombo):
+        self.LangCombo = LangCombo
     
