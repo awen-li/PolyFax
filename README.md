@@ -9,7 +9,11 @@ For example, the VCC can be used for empirical analysis and provide abundant tra
 Moreover, it is not limited to the type of language due to the language-independent implementation.
 
 Meanwhile, PolyFax provides a multi-task wrapper in implementation. Hence it enables parallel processes for **Crawler** and **Analyzer** and can retrieve and analyze 10 million commits in 24 hours.
-Moreover, developers or researchers can easily extend or customize the PolyFax based on its object-oriented design.
+
+Moreover, PolyFax provides three analyzers of implementation of NBR analysis, including NBR on language selection and vulnerabilities, language interfacing mechanism and vulnerabilities, and single language and vulnerabilities.
+
+Based on the design and implementation of PolyFax, developers or researchers can easily extend or customize the PolyFax based on its object-oriented design.
+
 
 # Setup PolyFax
 
@@ -17,6 +21,8 @@ Here we present the procedure to setup PolyFax through source code in three step
 1. Check prerequisites. PolyFax is well tested with Python3 under OS ubuntu 18.04; the suggested python version is 3.8+.
 2. Download source code through [this](https://github.com/Daybreak2019/PolyFax).
 3. Enter directory PolyFax and run [dependence.sh](https://github.com/Daybreak2019/PolyFax/blob/main/dependence.sh) to install the necessary dependencies (e.g., fuzzywuzzy, nltk).
+
+Additionaly, we also provide a container which contains the data of the paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code) with the [link](https://hub.docker.com/r/daybreak2019/fse22_vpomc). Use the command "docker pull daybreak2019/fse22_vpomc" to download the image.
 
 # Use PolyFax
 Following sections demonstrate how to use PolyFax with its three primary functionalities: grabbing repositories from GitHub and running the two analyzers of vulnerability-fixing commit and language interaction categorization.
