@@ -22,10 +22,19 @@ Here we present the procedure to setup PolyFax through source code in three step
 2. Download source code through [this](https://github.com/Daybreak2019/PolyFax).
 3. Enter directory PolyFax and run [dependence.sh](https://github.com/Daybreak2019/PolyFax/blob/main/dependence.sh) to install the necessary dependencies (e.g., fuzzywuzzy, nltk).
 
-Additionaly, we also provide a docker image with all dependences installed, it contains the data of the paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code) with the [link](https://hub.docker.com/r/daybreak2019/fse22_vpomc). Use the command "docker pull daybreak2019/fse22_vpomc" to download the image.
+Additionaly, we also provide a docker image with all dependences installed (suggested), it contains the data of the paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code) with the [link](https://hub.docker.com/r/daybreak2019/fse22_vpomc). Use the command "docker pull daybreak2019/fse22_vpomc" to download the image.
 
 # Use PolyFax
-Following sections demonstrate how to use PolyFax with its three primary functionalities: grabbing repositories from GitHub and running the two analyzers of vulnerability-fixing commit and language interaction categorization.
+Following sections demonstrate how to use PolyFax with its four primary functionalities: grabbing repositories from GitHub and running the two analyzers of vulnerability-fixing commit, language interaction categorization and NBR analysis.
+
+Before the experiments, execute the following command to get environment ready:
+```
+docker pull daybreak2019/fse22_vpomc
+docker run -itd --name "polyfax" daybreak2019/fse22_vpomc
+docker attach polyfax
+
+cd root/ && git clone https://github.com/Daybreak2019/PolyFax && cd PolyFax
+```
 
 ### Default parameters
 PolyFax has a default configure file under [config.ini](https://github.com/Daybreak2019/PolyFax/blob/main/Data/Config/config.ini) with the content as below:
@@ -79,6 +88,27 @@ The runtime log is similar as:
 
 ![PolyFax](https://github.com/Daybreak2019/PolyFax/blob/main/images/lic-log.png)
 
-### Run NBR analysis in paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code)
+### Run NBR analysis in paper [On the Vulnerability Proneness of Multilingual Code]
+Before run NBR experiments, copy the corresponding data to PolyFax with the following command:
+```
+cp /root/FSE22_Data/* /root/PolyFax/Data/ -rf
+```
 
-#### 
+#### NBR: \#Secutiry vulnerability vs Language selection
+```
+    python polyfax.py -a nbr-combo
+```
+the results correspond to Table 3-5 in the paper.
+
+#### NBR: \#Secutiry vulnerability vs Language interfacing category
+```
+    python polyfax.py -a nbr-lic
+```
+the results correspond to Table 6-7 in the paper.
+
+#### NBR: \#Secutiry vulnerability vs Single language
+```
+    python polyfax.py -a nbr-single
+```
+the results correspond to Table 8 in the paper.
+
