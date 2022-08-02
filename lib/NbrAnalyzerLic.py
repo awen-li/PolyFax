@@ -126,19 +126,19 @@ class NbrAnalyzerLic(Analyzer):
         #We are telling patsy that se_num is our dependent variable 
         #and it depends on the regression variables: combinations .... project variables
 
-        print ("==================================== secutiry vulnerabilities ====================================")
+        self.PrintTile ('   #Secutiry vulnerabilities vs LIC ')
         self.NbrCompute (cdf, "se_num")
         print ("\r\n\r\n")
         
-        print ("==================================== Risky_resource_management ====================================")
+        self.PrintTile ('   #Risky_resource_management vs LIC ')
         self.NbrCompute (cdf, "se_rem_num")
         print ("\r\n\r\n")
         
-        print ("==================================== Insecure_interaction_between_components ====================================")
+        self.PrintTile ('   #Insecure_interaction_between_components vs LIC ')
         self.NbrCompute (cdf, "se_iibc_num")
         print ("\r\n\r\n")
         
-        print ("==================================== Porous_defenses ====================================")
+        self.PrintTile ('   #Porous_defenses vs LIC ')
         self.NbrCompute (cdf, "se_pd_num")
         print ("\r\n\r\n")
         

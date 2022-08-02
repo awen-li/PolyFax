@@ -170,6 +170,12 @@ class Analyzer(metaclass=abc.ABCMeta):
 
     def GetNbrExpr (self, Value):
         pass
+
+    def PrintTile (self, Title):
+        print ("\n")
+        print ("====================================================================================")
+        print ("= %-80s =" %Title)
+        print ("====================================================================================")
         
     @abc.abstractmethod
     def Obj2List (self, Value):

@@ -87,19 +87,19 @@ class NbrAnalyzerSL(Analyzer):
             cdf[lang] = df['lang_val']
             index += 1
         
-        print ("==================================== secutiry vulnerabilities ====================================")
+        self.PrintTile ('   #Secutiry vulnerabilities vs Single language ')
         self.NbrCompute (cdf, "se_num")
         print ("\r\n\r\n")
         
-        print ("==================================== Risky_resource_management ====================================")
+        self.PrintTile ('   #Risky_resource_management vs Single language ')
         self.NbrCompute (cdf, "se_rem_num")
         print ("\r\n\r\n")
         
-        print ("==================================== Insecure_interaction_between_components ====================================")
+        self.PrintTile ('   #Insecure_interaction_between_components vs Single language ')
         self.NbrCompute (cdf, "se_iibc_num")
         print ("\r\n\r\n")
         
-        print ("==================================== Porous_defenses ====================================")
+        self.PrintTile ('   #Porous_defenses vs Single language ')
         self.NbrCompute (cdf, "se_pd_num")
         print ("\r\n\r\n")
 

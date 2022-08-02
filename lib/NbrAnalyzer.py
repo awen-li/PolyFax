@@ -204,7 +204,7 @@ class NbrAnalyzer(Analyzer):
                                                       row['se_rem_num'], row['se_iibc_num'], row['se_pd_num'], row['se_other']) 
 
     def load_top_combo (self, top_num=50):
-        print ("===================> top language selections:")
+        self.PrintTile ('   Top Language Selections   ')
         cdf = pd.read_csv(NbrAnalyzer.topcombo_stats)
         for index, row in cdf.iterrows():
             combo = row['combination']
@@ -286,19 +286,19 @@ class NbrAnalyzer(Analyzer):
         #We are telling patsy that se_num is our dependent variable 
         #and it depends on the regression variables: combinations .... project variables
 
-        print ("==================================== secutiry vulnerabilities ====================================")
+        self.PrintTile ('  #Secutiry vulnerabilities vs Language selection  ')
         self.NbrCompute (cdf, "se_num")
         print ("\r\n\r\n")
         
-        print ("==================================== Risky_resource_management ====================================")
+        self.PrintTile ('  #Risky_resource_management vs Language selection  ')
         self.NbrCompute (cdf, "se_rem_num")
         print ("\r\n\r\n")
 
-        print ("==================================== Insecure_interaction_between_components ====================================")
+        self.PrintTile ('  #Insecure_interaction_between_components vs Language selection  ')
         self.NbrCompute (cdf, "se_iibc_num")
         print ("\r\n\r\n")
        
-        print ("==================================== Porous_defenses ====================================")
+        self.PrintTile ('  #Porous_defenses vs Language selection  ')
         self.NbrCompute (cdf, "se_pd_num")
         print ("\r\n\r\n")
 
