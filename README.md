@@ -22,7 +22,7 @@ Here we present the procedure to setup PolyFax through source code in three step
 2. Download source code through [this](https://github.com/Daybreak2019/PolyFax).
 3. Enter directory PolyFax and run [dependence.sh](https://github.com/Daybreak2019/PolyFax/blob/main/dependence.sh) to install the necessary dependencies (e.g., fuzzywuzzy, nltk).
 
-Additionaly, we also provide a container which contains the data of the paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code) with the [link](https://hub.docker.com/r/daybreak2019/fse22_vpomc). Use the command "docker pull daybreak2019/fse22_vpomc" to download the image.
+Additionaly, we also provide a docker image with all dependences installed, it contains the data of the paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code) with the [link](https://hub.docker.com/r/daybreak2019/fse22_vpomc). Use the command "docker pull daybreak2019/fse22_vpomc" to download the image.
 
 # Use PolyFax
 Following sections demonstrate how to use PolyFax with its three primary functionalities: grabbing repositories from GitHub and running the two analyzers of vulnerability-fixing commit and language interaction categorization.
@@ -54,7 +54,7 @@ The runtime log is similar as:
 
 
 
-### Run analyzer of vulnerability-fixing commit categorization (VCC)}
+### Run analyzer of vulnerability-fixing commit categorization (VCC)
 When repository profiles and commits are grabbed to local,
 users can use the following command to categorize vulnerability-fixing commits:
 ```
@@ -67,7 +67,7 @@ The runtime log is similar as:
 
 
 
-### Run analyzer of language interaction categorization (LIC)}
+### Run analyzer of language interaction categorization (LIC)
 When repository profiles and the sources of repositories are cloned to local in 2.2,
 users can use the following command to categorize the projects by language interaction mechanisms:
 
@@ -78,3 +78,7 @@ users can use the following command to categorize the projects by language inter
 The runtime log is similar as:
 
 ![PolyFax](https://github.com/Daybreak2019/PolyFax/blob/main/images/lic-log.png)
+
+### Run NBR analysis in paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code)
+
+#### 
