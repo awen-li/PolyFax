@@ -97,12 +97,9 @@ class NbrAnalyzer(Analyzer):
         repo_id = NbrStats.repo_id
 
         cmmt_file = Config.CmmtFile (repo_id)
-        print (cmmt_file)
         if (Config.IsExist(cmmt_file) == False):
-            print (cmmt_file + " is not exist................................")
             return
 
-        print (cmmt_file + " is exist......")
         #developers & commit_num
         cdf = pd.read_csv(cmmt_file)
         
