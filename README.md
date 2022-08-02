@@ -1,7 +1,7 @@
 # PolyFax: An empirical study toolkit on Github projects
 
 # Introduction
-![PolyFax](https://github.com/Daybreak2019/PolyFax/blob/main/images/polyfax.png)
+![PolyFax](images/polyfax.png)
 ***
 PolyFax provides basic features, including repository crawler, commit classification, and language interaction categorization.
 Its precision and recall indicate the possibility of being applied for multiple purposes.
@@ -20,7 +20,7 @@ Based on the design and implementation of PolyFax, developers or researchers can
 Here we present the procedure to setup PolyFax through source code in three steps as below:
 1. Check prerequisites. PolyFax is well tested with Python3 under OS ubuntu 18.04; the suggested python version is 3.8+.
 2. Download source code through [this](https://github.com/Daybreak2019/PolyFax).
-3. Enter directory PolyFax and run [dependence.sh](https://github.com/Daybreak2019/PolyFax/blob/main/dependence.sh) to install the necessary dependencies (e.g., fuzzywuzzy, nltk).
+3. Enter directory PolyFax and run [dependence.sh](dependence.sh) to install the necessary dependencies (e.g., fuzzywuzzy, nltk).
 
 Additionaly, we also provide a docker image with all dependences installed (suggested), it contains the data of the paper [On the Vulnerability Proneness of Multilingual Code](https://www.researchgate.net/publication/362080560_On_the_Vulnerability_Proneness_of_Multilingual_Code) with the [link](https://hub.docker.com/r/daybreak2019/fse22_vpomc). Use the command "docker pull daybreak2019/fse22_vpomc" to download the image.
 
@@ -37,7 +37,7 @@ cd root/ && git clone https://github.com/Daybreak2019/PolyFax && cd PolyFax
 ```
 
 ### Default parameters
-PolyFax has a default configure file under [config.ini](https://github.com/Daybreak2019/PolyFax/blob/main/Data/Config/config.ini) with the content as below:
+PolyFax has a default configure file under [config.ini](Data/Config/config.ini) with the content as below:
 1. UserName: the username of GitHub account 
 2. Token: the access token of GitHub account
 3. TaskNum: the number of process for PolyFax 
@@ -59,7 +59,7 @@ In this step, ***Crawler*** will grab the repository profile, clone the reposito
 
 The runtime log is similar as:
 
-![PolyFax](https://github.com/Daybreak2019/PolyFax/blob/main/images/crawler-log.png)
+![PolyFax](images/crawler-log.png)
 
 
 
@@ -72,7 +72,7 @@ users can use the following command to categorize vulnerability-fixing commits:
 
 The runtime log is similar as:
 
-![PolyFax](https://github.com/Daybreak2019/PolyFax/blob/main/images/vcc-log.png)
+![PolyFax](images/vcc-log.png)
 
 
 
@@ -86,7 +86,7 @@ users can use the following command to categorize the projects by language inter
 
 The runtime log is similar as:
 
-![PolyFax](https://github.com/Daybreak2019/PolyFax/blob/main/images/lic-log.png)
+![PolyFax](images/lic-log.png)
 
 ### Run NBR analysis in paper [On the Vulnerability Proneness of Multilingual Code]
 Before run NBR experiments, copy the corresponding data to PolyFax with the following command:
