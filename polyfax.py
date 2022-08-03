@@ -99,6 +99,9 @@ def main(argv):
 
         CCTDist = CmmtCrawlerDist (TaskNum=TaskNum, RepoList=Cl.RepoList)
         CCTDist.Distributer ()
+
+        Ra = RepoAnalyzer ()
+        Ra.StartRun ()
     elif Act == 'crawler-cmmt':
         CCTDist = CmmtCrawlerDist (TaskNum=TaskNum)
         CCTDist.Distributer ()

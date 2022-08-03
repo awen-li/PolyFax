@@ -75,7 +75,7 @@ class NbrAnalyzerSL(Analyzer):
         print ("@@@ ALL langs ----> " + str(self.langs.keys()))
         for lang in self.langs.keys ():
             self.get_nbrdata (lang)
-            self.SaveData("Nbr_" + lang + '.csv')
+            self.SaveData("/Nbr_" + lang + '.csv')
 
         index = 0
         for lang in self.langs.keys ():
