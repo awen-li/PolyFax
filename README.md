@@ -30,8 +30,8 @@ Following sections demonstrate how to use PolyFax with its four primary function
 
 Before the experiments, execute the following command to get environment ready:
 ```
-docker pull daybreak2019/fse22_vpomc
-docker run -itd --name "polyfax" daybreak2019/fse22_vpomc
+docker pull daybreak2019/fse22_vpomc:v1.0
+docker run -itd --name "polyfax" daybreak2019/fse22_vpomc:v1.0
 docker attach polyfax
 
 cd root/ && git clone https://github.com/Daybreak2019/PolyFax && cd PolyFax
